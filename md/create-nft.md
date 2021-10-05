@@ -1,0 +1,5 @@
+## [Create your NFT](./api.md)
+### [Upload NFT file to IPFS server](./upload-ex.md)
+### [Mint NFT on Ternoa Chain](./mint.md)
+### [Generate encrypted NFT zip](./sign-pwd-request.md)
+### [SGX send to Bucket server](./sgx.md)
