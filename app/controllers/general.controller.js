@@ -105,7 +105,7 @@ exports.mnemonicGenerate = async (req, res) => {
 
 exports.uploadIM = async (req, res) => {
   const file = req.files.file;
-  if (!file || !['image/jpeg', 'image/png', 'image/gif', 'video/mp4'].includes(file.mimetype)) {
+  if (!file || !['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/quicktime'].includes(file.mimetype)) {
     throw new Error('Invalid file type');
   }
   const fileName = `${uuid()}_${file.name}`;
@@ -137,7 +137,7 @@ exports.uploadIM = async (req, res) => {
 
 exports.encryptAndUploadMedia = async (req, res) => {
   const file = req.files.file;
-  if (!file || !['image/jpeg', 'image/png', 'image/gif', 'video/mp4'].includes(file.mimetype)) {
+  if (!file || !['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/quicktime'].includes(file.mimetype)) {
     throw new Error('Invalid file type');
   }
   const fileName = `enc_${uuid()}_${file.name}`;
