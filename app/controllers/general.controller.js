@@ -9,7 +9,7 @@ const { sssaGenerate, SSSA_THRESHOLD } = require('../../scripts/sssa');
 const { getUserFromSeed } = require('../../scripts/common/chain');
 const { getSgxNodeApi, getSgxNodes } = require('../../scripts/sgx');
 const localTempFolder = process.env.LOCAL_TEMP_FOLDER || './tmp/';
-const localKeysFolder = process.env.LOCAL_KEYS_FOLDER || './nftKeys/';
+const localKeysFolder = process.env.LOCAL_KEYS_FOLDER || './nftkeys/';
 const shamirPath = process.env.SHAMIR_PATH || './faildShamirs';
 
 /******************
