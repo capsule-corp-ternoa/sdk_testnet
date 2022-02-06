@@ -25,16 +25,22 @@ export const uploadIPFS = async (stream:any) => {
     }
 
   } catch (err) {
+    console.log('uploadIPFS err', err)
     throw err
   }
 };
 
 export const uploadImService= async (fileName:any)=>{
-  const mediaFileStream = getFileStreamFromName(fileName);
-  const {url,size:mediaSize,IPFSHash:mediaIPFSHash, mediaType} = await uploadIPFS(mediaFileStream);
-  return { url,
-      mediaType,
-      mediaIPFSHash,
-      mediaSize
+  try{
+    const mediaFileStream = getFileStreamFromName(fileName);
+    const {url,size:mediaSize,IPFSHash:mediaIPFSHash, mediaType} = await uploadIPFS(mediaFileStream);
+    return { url,
+        mediaType,
+        mediaIPFSHash,
+        mediaSize
+    }
+  }catch(err){
+    console.log('uploadImService err', err)
+    throw err
   }
 }
