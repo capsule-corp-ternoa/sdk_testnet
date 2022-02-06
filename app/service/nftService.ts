@@ -267,8 +267,8 @@ export const encryptAndUploadService=async(fileName:any)=>{
 export const ProcessPreviewFiles =async (file:UploadedFile)=>{
     const fileName = `${uuid()}_${file.name}`;
     const destPath = getFilePath(fileName);
-    file.mv(destPath, async function (err) {if (err) {throw err}})
     try{
+        await file.mv(destPath)//, async function (err) {if (err) {throw err}})
         const data=await uploadImService(fileName);
         fs.unlinkSync(destPath);
         return data;
@@ -281,8 +281,8 @@ export const ProcessPreviewFiles =async (file:UploadedFile)=>{
 export const ProcessEncryptedFiles =async (file:UploadedFile)=>{
     const fileName = `${uuid()}_${file.name}`;
     const destPath = getFilePath(fileName);
-    file.mv(destPath, async function (err) {if (err) {throw err}})
     try{
+        await file.mv(destPath)//, async function (err) {if (err) {throw err}})
         const data =await encryptAndUploadService(fileName) as any;
         fs.unlinkSync(destPath);
         return data;

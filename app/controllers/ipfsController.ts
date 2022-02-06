@@ -12,7 +12,7 @@ export const uploadIM = async (req:Request, res:Response) => {
   const fileName = `${uuid()}_${file.name}`;
   const destPath = getFilePath(fileName);
   try {
-    const move= await file.mv(destPath)//, async function (err) {if (err) {throw err;}});
+    await file.mv(destPath)//, async function (err) {if (err) {throw err;}});
     const Ipfsdata =await uploadImService(fileName);
     res.status(200).json({
       Message:`File Successfully Uploaded to Ipfs.`,

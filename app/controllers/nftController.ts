@@ -109,8 +109,8 @@ export const encryptAndUploadMedia = async (req: Request, res: Response) => {
   const file = req.files?.file as UploadedFile; 
   const fileName = `enc_${uuid()}_${file.name}`;
   const destPath = getFilePath(fileName);
-  file.mv(destPath, async function (err) {if (err) {throw err;}});
   try {
+    await file.mv(destPath)//, async function (err) {if (err) {throw err;}});
     const data=await encryptAndUploadService(fileName) as any;
     const obj=data;
     res.status(200).json(
