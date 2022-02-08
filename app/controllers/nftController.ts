@@ -76,7 +76,7 @@ export const getNftIdBySeries = async (req: Request, res: Response) => {
     catch (err) {
       res.status(500).json({ 
         message: 'Unable to Fetch Nft Ids', 
-        details:err
+        details:`${err}`
       });
     }
 };
@@ -99,7 +99,7 @@ export const getNFTsByOwner = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to Fetch Nft Ids', 
-        details:err
+        details:`${err}`
       });
   }
 
@@ -128,7 +128,7 @@ export const encryptAndUploadMedia = async (req: Request, res: Response) => {
   {
     res.status(500).json({ 
         message: 'Unable to Encrypt and Upload file to Ipfs.', 
-        details:err
+        details:`${err}`
       });
   }
 
@@ -149,7 +149,7 @@ export const uploadNFTJson = async (req: Request, res: Response) => {
   } catch (err) {
       res.status(500).json({ 
         message: 'Unable to Upload Nft Json to Ipfs', 
-        details:err
+        details:`${err}`
       });
   }
 };
@@ -179,7 +179,7 @@ export const mintNFT = async (req: Request, res: Response) => {
       res.status(500).json(
         {
           message:'Error creating Nft on blockchain!',
-          details:err
+          details:`${err}`
         }
       )
     }
@@ -226,7 +226,7 @@ export const createNewNFT = async (req: Request, res: Response,next:NextFunction
     res.status(500).json(
       {
         message:'Error creating Nft on blockchain!',
-        details:err
+        details:`${err}`
       })
   }
 }
@@ -272,7 +272,7 @@ export const burnNft = async (req: Request, res: Response) => {
        res.status(500).json(
       {
         message:'Error Burning Nft on blockchain!',
-        details:err
+        details:`${err}`
       })
     }
   }
@@ -293,7 +293,7 @@ export const NftSale = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to List this Nft for sale.', 
-        details:err
+        details:`${err}`
       });
   }
 }
@@ -307,7 +307,7 @@ export const serieLock = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
         message: 'Unable to Lock Nft Serie.', 
-        details:err
+        details:`${err}`
     });
   }
 }
@@ -321,7 +321,7 @@ export const NftUnlist = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
         message: 'Unable to Unlist Nft from Sale.', 
-        details:err
+        details:`${err}`
       });
   }
 }
@@ -340,7 +340,7 @@ export const decryptNft = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
         message: 'Unable to Decrypt Nft.', 
-        details:err
+        details:`${err}`
       });
   }
 } 

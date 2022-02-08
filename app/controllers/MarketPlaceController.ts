@@ -21,7 +21,7 @@ export const createMarketPlace = async (req: Request, res: Response) => {
     catch (err) {
         res.status(500).json({ 
             message: 'Unable to Create a market place on Blockchain.', 
-            details:err
+            details:`${err}`
         });
     }
 }
