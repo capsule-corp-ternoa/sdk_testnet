@@ -255,7 +255,8 @@ export const encryptAndUploadService=async(fileName:any)=>{
         const pgp = await generatePgp();
         const [{ url: encryptedMedia, IPFSHash: encryptedMediaIPFSHash, size: encryptedMediaSize, mediaType: encryptedMediaType }, { url: publicPgpLink, IPFSHash: publicPgpIPFSHash }]: any = await cryptAndUploadNFT(secretFileStream, pgp.publicKey);
         const privateKeyFilePath = localKeysFolder + publicPgpIPFSHash
-        console.log('')
+        console.log('privateKeyFilePath', privateKeyFilePath)
+        console.log('privateKey', pgp.privateKey)
         fs.writeFileSync(privateKeyFilePath, pgp.privateKey);
         return {
             encryptedMedia,
