@@ -15,7 +15,7 @@ import { Server } from 'http';
 import path from 'path';
 dotenv.config();
 
-const clusterMode = Number(process.env.CLUSTER_MODE) == 1;
+const clusterMode = Number(process.env.CLUSTER_MODE) === 1;
 export let app: express.Application;
 export let server: Server;
 const handleMaster = () => {
@@ -29,7 +29,7 @@ const handleMaster = () => {
     fs.mkdirSync('./tmp');
   if (!fs.existsSync('./faildShamirs'))
     fs.mkdirSync('./faildShamirs');
-  if (clusterMode) {
+  if (clusterMode && false) {
     const numCPUs = os.cpus().length;
     let i = 0;
     // cluster.schedulingPolicy = cluster.SCHED_RR;
