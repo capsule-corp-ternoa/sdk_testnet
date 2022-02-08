@@ -114,9 +114,14 @@ export const safeDisconnect = () => {
 export const formatChainData = (data: any) => JSON.parse(JSON.stringify(data));
 
 export const getUserFromSeed = async (seed: string) => {
-    const keyring = new Keyring({ type: 'sr25519' })
-    await cryptoWaitReady();
-    return keyring.createFromUri(seed);
+    try{
+        const keyring = new Keyring({ type: 'sr25519' })
+        await cryptoWaitReady();
+        return keyring.createFromUri(seed);
+    }catch(err){
+        console.log('getUserFromSeed: err:', err)
+        throw new Error("invalid seed")
+    }
 }
 
 export const getSignature = (sender: any, data: any) => u8aToHex(sender.sign(data));
