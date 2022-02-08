@@ -21,8 +21,8 @@ export let server: Server;
 const handleMaster = () => {
   app = express()
   /* create directories */
-  if (!fs.existsSync('./nftkeys'))
-    fs.mkdirSync('./nftkeys');
+  if (!fs.existsSync('./nftKeys'))
+    fs.mkdirSync('./nftKeys');
   if (!fs.existsSync('./uploads'))
     fs.mkdirSync('./uploads');
   if (!fs.existsSync('./tmp'))

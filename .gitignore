@@ -10,6 +10,7 @@ keys/password.txt
 keys/sharedUrl.txt
 uploads/*
 nftkeys/*
+nftKeys/*
 txtkeys/*
 tosgx/*
 private/*
