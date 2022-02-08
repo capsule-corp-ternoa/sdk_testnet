@@ -82,17 +82,11 @@ export const cryptAndUploadCapsule= async (capsule:string,publicPGP:string) => {
         try{
             const encryptedCapsule = await cryptFilePgp(capsule, publicPGP);     
             const secretFileName = getStreamFilename(capsule);
-            const pgpPath = `./tmp/pgp-public-key_${uuid()}.txt`;
-            const pgpFile = contentToStream(publicPGP, pgpPath);
             const encryptedPath = `./tmp/${uuid()}_${secretFileName}`;
             const encryptedFile = contentToStream(encryptedCapsule, encryptedPath);
-            const [encryptedUploadResponse, pgpUploadResponse] = await Promise.all([
-                uploadIPFS(encryptedFile),
-                uploadIPFS(pgpFile),
-            ])
+            const encryptedUploadResponse = await uploadIPFS(encryptedFile)
             deleteFile(encryptedPath)
-            deleteFile(pgpPath)
-            resolve([encryptedUploadResponse, pgpUploadResponse]) 
+            resolve(encryptedUploadResponse) 
         }
         catch (err) 
         {

@@ -91,7 +91,6 @@ export const capsuleItemEncrypt = async (req: Request, res: Response) => {
   const nftId = req.params.nftId as any;
   const fileName = `enc_${uuid()}_${file.name}`;
   const destPath = getFilePath(fileName);
-  const fileSizeInBytes = file.size
   file.mv(destPath, async function (err) {
     if (err) {
       throw err;
@@ -102,13 +101,10 @@ export const capsuleItemEncrypt = async (req: Request, res: Response) => {
       const publicPgpLink = nftIpfsdata.properties.publicPGP
       const nftPublicKey = await getNftPublicKey(publicPgpLink);
       const secretFileStream: any = getFileStreamFromName(fileName);
-      const [{ url: encryptedMedia, mediaType: encryptedMediaType }]: any = await cryptAndUploadCapsule(secretFileStream, nftPublicKey);
+      const {mediaType, IPFSHash, size, url}: any = await cryptAndUploadCapsule(secretFileStream, nftPublicKey);
       res.status(200).json({
         Message:`File Encrypted for Capsule Media for ${nftId}.`,
-        Data:{encryptedMedia,
-        encryptedMediaType,
-        publicPgpLink,
-        size: fileSizeInBytes}
+        Data:{url, ipfs:IPFSHash, mediaType,size, publicPgpLink}
       });
     } catch (err) {
         res.status(500).json({ 
@@ -124,8 +120,8 @@ export const uploadCapsuleJson = async (req: Request, res: Response) => {
   try {
     const { url, IPFSHash } = await generateAndUploadCapsuleJson(title, ipfs, mediaType, size);
     res.status(200).json({
-        Message:`Json Updated.`,
-        Data:{ url, IPFSHash }});
+        Message:`Json Uploaded.`,
+        Data:{ url, ipfs:IPFSHash }});
   } catch (err) {
       res.status(500).json({ 
         message: 'Unable to Upload Capsule Json on Ipfs', 
