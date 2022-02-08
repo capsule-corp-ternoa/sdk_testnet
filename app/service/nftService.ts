@@ -46,8 +46,6 @@ export const cryptAndUploadNFT = async (secretNFT: string, publicPGP: string) =>
             ])
             deleteFile(encryptedPath)
             deleteFile(pgpPath)
-            console.log('pgpUploadResponse :', pgpUploadResponse)
-            console.log('encryptedUploadResponse :', encryptedUploadResponse)
             resolve([encryptedUploadResponse, pgpUploadResponse])
         } catch (err) {
             reject(err)
@@ -255,8 +253,6 @@ export const encryptAndUploadService=async(fileName:any)=>{
         const pgp = await generatePgp();
         const [{ url: encryptedMedia, IPFSHash: encryptedMediaIPFSHash, size: encryptedMediaSize, mediaType: encryptedMediaType }, { url: publicPgpLink, IPFSHash: publicPgpIPFSHash }]: any = await cryptAndUploadNFT(secretFileStream, pgp.publicKey);
         const privateKeyFilePath = localKeysFolder + publicPgpIPFSHash
-        console.log('privateKeyFilePath', privateKeyFilePath)
-        console.log('privateKey', pgp.privateKey)
         fs.writeFileSync(privateKeyFilePath, pgp.privateKey);
         return {
             encryptedMedia,
