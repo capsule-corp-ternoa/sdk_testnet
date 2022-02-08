@@ -248,20 +248,26 @@ export const unlistNft = async (nftId: number, seed: string): Promise<any> => {
 };
 
 export const encryptAndUploadService=async(fileName:any)=>{
-    const secretFileStream: any = getFileStreamFromName(fileName);
-    const pgp = await generatePgp();
-    const [{ url: encryptedMedia, IPFSHash: encryptedMediaIPFSHash, size: encryptedMediaSize, mediaType: encryptedMediaType }, { url: publicPgpLink, IPFSHash: publicPgpIPFSHash }]: any = await cryptAndUploadNFT(secretFileStream, pgp.publicKey);
-    const privateKeyFilePath = localKeysFolder + publicPgpIPFSHash
-    fs.writeFileSync(privateKeyFilePath, pgp.privateKey);
-    return {
-        encryptedMedia,
-        publicPgpLink,
-        encryptedMediaIPFSHash,
-        encryptedMediaType,
-        encryptedMediaSize,
-        publicPgpIPFSHash,
-        privateKeyFilePath,
-    };
+    try{
+        const secretFileStream: any = getFileStreamFromName(fileName);
+        const pgp = await generatePgp();
+        const [{ url: encryptedMedia, IPFSHash: encryptedMediaIPFSHash, size: encryptedMediaSize, mediaType: encryptedMediaType }, { url: publicPgpLink, IPFSHash: publicPgpIPFSHash }]: any = await cryptAndUploadNFT(secretFileStream, pgp.publicKey);
+        const privateKeyFilePath = localKeysFolder + publicPgpIPFSHash
+        fs.writeFileSync(privateKeyFilePath, pgp.privateKey);
+        return {
+            encryptedMedia,
+            publicPgpLink,
+            encryptedMediaIPFSHash,
+            encryptedMediaType,
+            encryptedMediaSize,
+            publicPgpIPFSHash,
+            privateKeyFilePath,
+        };
+    }catch (err){
+        console.log('encryptAndUploadService err', err);
+        throw err
+    }
+    
 }
 
 export const ProcessPreviewFiles =async (file:UploadedFile)=>{
