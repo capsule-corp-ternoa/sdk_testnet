@@ -20,7 +20,6 @@ export const setCapsuleIpfsReferenceService=async(nftId:number,ipfs:string,seed:
 
 export const getCapsuleItems = async (nftId:any) => {
         const capsuleMetadata=await capsuleMetaData(nftId);
-        console.log('capsuleMetadata',capsuleMetadata)
         const url=`${process.env.IPFS_GATEWAY_BASE_URL}/ipfs/${capsuleMetadata.ipfs_reference}`;
         const res= await axios.get(url)
         if (res && res.data){
