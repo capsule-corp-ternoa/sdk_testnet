@@ -147,8 +147,8 @@ export const addFileToCapsule = async (req: Request, res: Response) => {
       const publicPgpLink = nftIpfsdata.properties.publicPGP
       const nftPublicKey = await getNftPublicKey(publicPgpLink);
       const secretFileStream: any = getFileStreamFromName(fileName);
-      const [{ url: encryptedMedia, IPFSHash: encryptedMediaIPFSHash, size: encryptedMediaSize, mediaType: encryptedMediaType }]: any
-      = await cryptAndUploadCapsule(secretFileStream, nftPublicKey);
+      const cryptAndUploadRes: any= await cryptAndUploadCapsule(secretFileStream, nftPublicKey);
+      const { IPFSHash: encryptedMediaIPFSHash, size: encryptedMediaSize, mediaType: encryptedMediaType } = cryptAndUploadRes;
       const newIpfs = await addCapsuleItem(title, encryptedMediaIPFSHash, encryptedMediaType, encryptedMediaSize, nftId) as any;
       if(newIpfs)
       {
