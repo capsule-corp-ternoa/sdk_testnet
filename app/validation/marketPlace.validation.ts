@@ -5,8 +5,20 @@ export const createMarketPlaceSchema: Joi.ObjectSchema = Joi.object({
         name:Joi.string().required(),
         commission_fee:Joi.string().required(), 
         kind:Joi.string().required(), 
-        uri:Joi.string().required(),
-        logoUri:Joi.string().required(),
+        uri:Joi.string().optional(),
+        logoUri:Joi.string().optional(),
         seed:Joi.string().optional(),
+    }
+})
+
+export const MarketPlaceByOwnerSchema: Joi.ObjectSchema = Joi.object({
+    params:{
+        ownerAddress:Joi.string().required(),
+    }
+})
+
+export const MarketPlaceByIdSchema: Joi.ObjectSchema = Joi.object({
+    params:{
+        id:Joi.string().required(),
     }
 })

@@ -40,5 +40,6 @@ export enum txEvent {
     BatchCompleted='utility.BatchCompleted',
     CapsuleIpfsReferenceChanged='capsules.CapsuleIpfsReferenceChanged',
     CapsuleCreated='capsules.CapsuleCreated',
-    CapsuleRemoved='capsules.CapsuleRemoved'
+    CapsuleRemoved='capsules.CapsuleRemoved',
+    MarketplaceCreated='marketplace.MarketplaceCreated'
 }

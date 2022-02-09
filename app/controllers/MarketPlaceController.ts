@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { OpenMarketPlace } from '../service/marketPlaceService';
+import { createMarketPlaceService ,getMarketplaceDataByOwner as ownerDataforMp,getMarketplaceDataById} from '../service/marketPlaceService';
 
 
 import { 
@@ -12,7 +12,7 @@ export const createMarketPlace = async (req: Request, res: Response) => {
     const seed = getSeedFromRequest(req);
     try {
         const sender = await getUserFromSeed(seed);
-        const data=await OpenMarketPlace(name, commission_fee, kind, uri, logoUri, sender);
+        const data=await createMarketPlaceService(name, commission_fee, kind, uri, logoUri, sender);
         res.status(200).json({
             Message:`MarketPlace Created on BlockChain.`,
             Data:data
@@ -26,4 +26,52 @@ export const createMarketPlace = async (req: Request, res: Response) => {
     }
 }
 
+export const getMarketplaceDataByOwner = async (req: Request, res: Response) => {
+    const ownerAddress=req.params.ownerAddress;
+    try{
+        const data=await ownerDataforMp(ownerAddress);
+        if(data)
+        {
+            res.status(200).json({
+                message:`Marketplace data for owner: ${ownerAddress}` ,
+                data:data
+            })
+        }
+        else
+        {
+            res.status(404).send("Unable to fetch marketplace data.")
+        }
+    }
+    catch(err)
+    {
+        res.status(500).json({
+            message:"Unable to Fetch Data",
+            Details:err
+        })
+    }
+}
         
+export const getMarketplaceById = async (req: Request, res: Response) => {
+    const id=req.params.id as any;
+    try{
+        const data=await getMarketplaceDataById(id);
+        if(data)
+        {
+            res.status(200).json({
+                message:`Marketplace data for Id: ${id}`,
+                data:data
+            })
+        }
+        else
+        {
+            res.status(404).send("Unable to fetch marketplace data.")
+        }
+    }
+    catch(err)
+    {
+        res.status(500).json({
+            message:"Unable to Fetch Data",
+            Details:err
+        })
+    }
+}
