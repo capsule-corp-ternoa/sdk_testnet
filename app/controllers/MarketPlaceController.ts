@@ -46,7 +46,7 @@ export const getMarketplaceDataByOwner = async (req: Request, res: Response) => 
     {
         res.status(500).json({
             message:"Unable to Fetch Data",
-            Details:err
+            details:err && (err as any).message?(err as any).message:err
         })
     }
 }
@@ -71,7 +71,7 @@ export const getMarketplaceById = async (req: Request, res: Response) => {
     {
         res.status(500).json({
             message:"Unable to Fetch Data",
-            Details:err
+            details:err && (err as any).message?(err as any).message:err
         })
     }
 }
@@ -92,7 +92,7 @@ export const getAllMarketplaceFromChain = async (req: Request, res: Response) =>
         console.log('getAllMarketplaceFromChain::', err)
         res.status(500).json({
             message:"Unable to Fetch Data",
-            Details:err
+            details:err && (err as any).message?(err as any).message:err
         })
     }
 }
@@ -117,7 +117,7 @@ export const getMarketplaceByIdFromChain = async (req: Request, res: Response) =
     {
         res.status(500).json({
             message:"Unable to Fetch Data",
-            Details:err
+            details:err && (err as any).message?(err as any).message:err
         })
     }
 }
@@ -135,7 +135,7 @@ export const setCommissionFee= async (req: Request, res: Response) => {
     catch(err){
           res.status(500).json({
             message:`Unable to update commission fee on marketplace with Id:${mpId}.`,
-            Details:err
+            details:err && (err as any).message?(err as any).message:err
         })
     }
 }
@@ -153,7 +153,7 @@ export const setOwnerForMarketPlace= async (req: Request, res: Response) => {
     catch(err){
           res.status(500).json({
             message:`Unable to update owner of marketplace with Id:${mpId}.`,
-            Details:err
+            details:err && (err as any).message?(err as any).message:err
         })
     }
 }
@@ -171,7 +171,7 @@ export const setKindForMarketPlace= async (req: Request, res: Response) => {
     catch(err){
           res.status(500).json({
             message:`Unable to update kind of marketplace with Id:${mpId}.`,
-            Details:err
+            details:err && (err as any).message?(err as any).message:err
         })
     }
 }
@@ -189,7 +189,7 @@ export const setNameForMarketPlace= async (req: Request, res: Response) => {
     catch(err){
           res.status(500).json({
             message:`Unable to update name of marketplace with Id:${mpId}.`,
-            Details:err
+            details:err && (err as any).message?(err as any).message:err
         })
     }
 }
@@ -208,7 +208,7 @@ export const setUriForMarketPlace= async (req: Request, res: Response) => {
 
           res.status(500).json({
             message:`Unable to update uri of marketplace with Id:${mpId}.`,
-            Details:err
+            details:err && (err as any).message?(err as any).message:err
         })
     }
 }
@@ -226,7 +226,7 @@ export const setlogoUriForMarketPlace= async (req: Request, res: Response) => {
     catch(err){
           res.status(500).json({
             message:`Unable to update logouri of marketplace with Id:${mpId}.`,
-            Details:err
+            details:err && (err as any).message?(err as any).message:err
         })
     }
 }
