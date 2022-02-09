@@ -13,7 +13,7 @@ export const balanceCheckMiddleware = (txPallet: txPallets, txAction: txActions)
             res.status(403).send("Low Balance for this Transaction!")
         }
     }catch(err){
-        res.status(400).send(`${err}`)
+        res.status(400).send(err && (err as any).message?(err as any).message:err)
     }
     
 }

@@ -45,7 +45,7 @@ export const setIpfsReference = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to update Capsule Ipfs Reference on blockchain.', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 }
@@ -62,7 +62,7 @@ export const CapsuleItems = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to Fetch Capsule Items.', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 }
@@ -81,7 +81,7 @@ export const getCapsuleMetadata = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to Fetch Capsule Data', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 }
@@ -109,7 +109,7 @@ export const capsuleItemEncrypt = async (req: Request, res: Response) => {
     } catch (err) {
         res.status(500).json({ 
           message: 'Unable to Encrypt or Upload a file on Ipfs.', 
-          details:`${err}`
+          details:err && (err as any).message?(err as any).message:err
         });
     }
   });
@@ -125,7 +125,7 @@ export const uploadCapsuleJson = async (req: Request, res: Response) => {
   } catch (err) {
       res.status(500).json({ 
         message: 'Unable to Upload Capsule Json on Ipfs', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 };
@@ -165,7 +165,7 @@ export const addFileToCapsule = async (req: Request, res: Response) => {
     } catch (err) {
         res.status(500).json({ 
           message: 'Unable to Add File to Capsule Media', 
-          details:`${err}`
+          details:err && (err as any).message?(err as any).message:err
         });
     }
   });
@@ -183,7 +183,7 @@ export const nftToCapsule = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
       message: 'Unable to conver nft to Capsule', 
-      details:`${err}`
+      details:err && (err as any).message?(err as any).message:err
     });
   }
 }
@@ -202,7 +202,7 @@ export const CapsuleToNft = async (req: Request, res: Response) => {
     catch (err) {
       res.status(500).json({ 
         message: 'Unable to Convert Capsule Back to Nft', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
     }
 }
@@ -221,7 +221,7 @@ export const createCapsule = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
       message: 'Unable to Create Capsule On blockchain!', 
-      details:`${err}`
+      details:err && (err as any).message?(err as any).message:err
     });
   }
 }
@@ -246,7 +246,7 @@ export const removeFileFromCapsule = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
       message: 'Unable to remove Capsule File from Ipfs', 
-      details:`${err}`
+      details:err && (err as any).message?(err as any).message:err
     });
   }
 }

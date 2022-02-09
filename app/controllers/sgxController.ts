@@ -20,7 +20,7 @@ export const saveShamirForNFT = async (req:Request, res:Response) => {
   catch (err) {
     res.status(500).json({ 
       message: 'Unable to Save shamir to Sgx.', 
-      details:`${err}`
+      details:err && (err as any).message?(err as any).message:err
     });
   }
 }
