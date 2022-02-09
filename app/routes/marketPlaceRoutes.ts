@@ -38,6 +38,6 @@ marketplaceRouter.post("/api/setUriForMarketPlace",  validationMiddleware(setUri
 marketplaceRouter.post("/api/setlogoUriForMarketPlace",  validationMiddleware(setLogoUriSchema),checkMpOwnershipMiddleware,balanceCheckMiddleware(txPallets.marketplace, txActions.setLogoUri), setlogoUriForMarketPlace);
 marketplaceRouter.get("/api/getMarketplacesForOwner/:ownerAddress", validationMiddleware(MarketPlaceByOwnerSchema), getMarketplaceDataByOwner);
 marketplaceRouter.get("/api/getMarketplaceById/:id",  validationMiddleware(MarketPlaceByIdSchema), getMarketplaceById);
-marketplaceRouter.get("/api/getMarketplaceByIdfromChain/:id",  validationMiddleware(MarketPlaceByIdSchema),balanceCheckMiddleware(txPallets.marketplace, txActions.setCommissionFee), getMarketplaceByIdFromChain);
+marketplaceRouter.get("/api/getMarketplaceByIdfromChain/:id",  validationMiddleware(MarketPlaceByIdSchema), getMarketplaceByIdFromChain);
 
 export default marketplaceRouter;
