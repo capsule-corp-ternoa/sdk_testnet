@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { getSeedFromRequest } from "../helpers";
 import { UploadedFile } from 'express-fileupload';
 import * as fs from 'fs';
-import { getUserFromSeed } from "../service/blockchain.service";
+import { getApi, getUserFromSeed } from "../service/blockchain.service";
 import { isNftOwner, isNftCapsule, checkNftOwnerEqualTo, checkIsNftCapsule } from "../service/nftService";
 export const checkNftOwnershipMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     let isOwner;
@@ -102,4 +102,28 @@ export const CheckPreviewFile=async (req: Request, res: Response, next: NextFunc
     {
         next()
     }
+}
+
+export const checkSerieLockedMiddleWare=async (req: Request, res: Response, next: NextFunction)=>{ 
+    const {seriesId}=req.body;
+    const SeriesData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.series(seriesId)));
+    if(SeriesData)
+    {
+        if(SeriesData.draft===true){next()}
+        else{res.status(403).send("Forbidden!! Serie is Locked!");}
+    }
+    else{next()}
+    
+}
+
+export const checkSerieinDraftMiddleWare=async (req: Request, res: Response, next: NextFunction)=>{ 
+    const {nftId}=req.body;
+    const nftData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.data(nftId)));
+    const SeriesData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.series(nftData.series_id)));
+    if(SeriesData)
+    {
+        if(SeriesData.draft===true){res.status(403).send("Forbidden!! Serie is in Draft! Lock to continue Operation!")}
+        else{next()}
+    }
+    else{res.status(403).send("Forbidden!! SeriesId Not valid or not available!")}
 }

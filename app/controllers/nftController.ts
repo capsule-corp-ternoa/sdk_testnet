@@ -35,7 +35,7 @@ import {
   getSgxNodes,
   saveSSSAToSGX
 } from '../service/sgxService';
-import { getUserFromSeed } from '../service/blockchain.service';
+import { getApi, getUserFromSeed } from '../service/blockchain.service';
 import { getSeedFromRequest } from '../helpers';
 import { nextTick } from 'process';
 
@@ -43,7 +43,7 @@ const localKeysFolder = process.env.LOCAL_KEYS_FOLDER || './nftKeys/';
 
 export const getNftDataFromIndexer = async (req: Request, res: Response) => {
   const { id } = req.params;
-
+  console.log(await (await getApi()).query.nfts.series());
   try {
     const nftIndexerData = await getNftById(id);
     res.status(200).json(
