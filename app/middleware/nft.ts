@@ -58,8 +58,8 @@ export const checkNftNotBurntMiddleware = async (req: Request, res: Response, ne
     }
 }
 export const checkNFTNotListedMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    const isListed = req.body.nft.listed !== 1;
-    if (!isListed) {
+    const isNotListed = req.body.nft.listed === 0;
+    if (isNotListed) {
         next()
     } else {
         res.status(403).send('Forbidden: This NFT is listed!');
