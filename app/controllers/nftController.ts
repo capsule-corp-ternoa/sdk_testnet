@@ -19,7 +19,8 @@ import {
   lockNftSerie,
   unlistNft,
   encryptAndUploadService,
-  decryptNftOrCapsule
+  decryptNftOrCapsule,
+  nftTransferService
 } from '../service/nftService';
 
 import {
@@ -344,3 +345,28 @@ export const decryptNft = async (req: Request, res: Response) => {
       });
   }
 } 
+
+export const nftTransfer= async (req: Request, res: Response) => {
+  const {nftId,recieverAddress}=req.body;
+  try{
+    const seed=getSeedFromRequest(req);
+    const sender=getUserFromSeed(seed);
+    const reciever=getUserFromSeed(recieverAddress);
+    const data = await nftTransferService(nftId,reciever,sender);
+    if(data)
+    {
+      res.status(200).json({
+        message:`Success! transfer Nft with Id: ${nftId} to Account: ${recieverAddress}.`,
+        nftId:data
+      })
+    }
+  }
+  catch(err){
+    res.status(500).json(
+      {
+        message:`Unable to transfer Nft with Id: ${nftId} to Account: ${recieverAddress} `,
+        details:err
+      }
+    )
+  }
+}

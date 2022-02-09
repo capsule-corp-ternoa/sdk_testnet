@@ -17,6 +17,7 @@ import {
     NftUnlist,
     decryptNft,
     getNftIdBySeries,
+    nftTransfer
 } from "../controllers/nftController";
 
 import { validationMiddleware } from "../validation";
@@ -39,6 +40,7 @@ nftRouter.post("/api/NftSale",validationMiddleware(nftSaleSchema),contextSetterM
 nftRouter.post("/api/nft/unlist/:id", validationMiddleware(unlistNftSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.nfts, txActions.unlist),checkNftOwnershipMiddleware,checkNftListedMiddleware, NftUnlist);
 nftRouter.post("/api/serie/lock",validationMiddleware(serieLockSchema), balanceCheckMiddleware(txPallets.nfts, txActions.finishSeries), serieLock);
 nftRouter.post("/api/nft/decrypt/:id", validationMiddleware(decryptNftSchema),contextSetterMiddleware, checkNftOwnershipMiddleware,checkNftNotBurntMiddleware, decryptNft);
+nftRouter.post("/api/nftTransfer",nftTransfer);
 nftRouter.get("/api/nft/:id",validationMiddleware(getNftDataSchema), getNftDataFromIndexer);
 nftRouter.get("/api/getNFTsByOwner/:ownerAddress", validationMiddleware(getNftDataByOwnerScehma),getNFTsByOwner);
 nftRouter.get("/api/getNftIdBySeries", validationMiddleware(getNftIdBySeriesSchema), getNftIdBySeries);
