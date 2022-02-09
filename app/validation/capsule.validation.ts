@@ -24,11 +24,7 @@ export const nftToCapsuleSchema: Joi.ObjectSchema = Joi.object({
 })
 export const uploadCapsuleJsonSchema: Joi.ObjectSchema = Joi.object({
     body:{
-        
-        title:Joi.string().required(),
-        ipfs:Joi.string().required(),
-        mediaType:Joi.string().required(),
-        size:Joi.string().required()
+        capsuleCryptedMedias:Joi.array().required(),
     }
 })
 

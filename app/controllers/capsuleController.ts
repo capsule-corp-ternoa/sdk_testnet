@@ -116,9 +116,9 @@ export const capsuleItemEncrypt = async (req: Request, res: Response) => {
 };
 
 export const uploadCapsuleJson = async (req: Request, res: Response) => {
-  const { title, ipfs, mediaType, size } = req.body;
+  const { capsuleCryptedMedias } = req.body;
   try {
-    const { url, IPFSHash } = await generateAndUploadCapsuleJson(title, ipfs, mediaType, size);
+    const { url, IPFSHash } = await generateAndUploadCapsuleJson(capsuleCryptedMedias);
     res.status(200).json({
         Message:`Json Uploaded.`,
         Data:{ url, ipfs:IPFSHash }});

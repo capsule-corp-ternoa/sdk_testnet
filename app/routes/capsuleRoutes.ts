@@ -18,11 +18,12 @@ import { setIpfsReferenceSchema,uploadCapsuleJsonSchema,capsuleCreateSchema,remo
 import { balanceCheckMiddleware } from '../middleware/balance';
 import { checkNftOwnershipMiddleware,checkNFTCapsuleMiddleware,checkNFTNotCapsuleMiddleware } from '../middleware/nft';
 import { contextSetterMiddleware } from '../middleware/common';
+import {validateUploadCapsuleJsonMiddleware} from '../middleware/capsule';
 const capsuleRouter = Router();
 
 capsuleRouter.post("/api/capsuleItemEncrypt/:nftId",validationMiddleware(capsuleItemEncryptSchema), capsuleItemEncrypt);
 capsuleRouter.post("/api/getCapsuleMetadata/:nftId",validationMiddleware(capsuleCommonSchema), getCapsuleMetadata);
-capsuleRouter.post("/api/uploadCapsuleJson",validationMiddleware(uploadCapsuleJsonSchema), uploadCapsuleJson);
+capsuleRouter.post("/api/uploadCapsuleJson",validationMiddleware(uploadCapsuleJsonSchema), validateUploadCapsuleJsonMiddleware,uploadCapsuleJson);
 capsuleRouter.post("/api/addFileToCapsule/:nftId",validationMiddleware(addFileToCapsuleschema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.setIpfsReference),checkNftOwnershipMiddleware,checkNFTCapsuleMiddleware,addFileToCapsule);
 capsuleRouter.post("/api/nftToCapsule", validationMiddleware(nftToCapsuleSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.createFromNft),checkNFTNotCapsuleMiddleware,checkNftOwnershipMiddleware, nftToCapsule);
 capsuleRouter.post("/api/CapsuleToNft/:nftId",validationMiddleware(capsuleRemoveSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.remove),checkNFTCapsuleMiddleware,checkNftOwnershipMiddleware,CapsuleToNft);

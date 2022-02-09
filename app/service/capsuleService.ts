@@ -94,17 +94,9 @@ export const cryptAndUploadCapsule= async (capsule:string,publicPGP:string) => {
     })
 }
 
-export const generateAndUploadCapsuleJson = (title:string, ipfs:string,mediaType:string,size:number) => {
+export const generateAndUploadCapsuleJson = (capsuleCryptedMedias:any) => {
   const data={
-   capsuleCryptedMedias:
-    [
-       {
-           title,
-           ipfs,
-           mediaType,
-           size
-       }
-    ] 
+   capsuleCryptedMedias:capsuleCryptedMedias
   }
   const capsuleJsonFile = contentToStream(JSON.stringify(data), `capsule_${uuid()}.json`)
   return uploadIPFS(capsuleJsonFile);
