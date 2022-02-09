@@ -13,6 +13,7 @@ import os from 'os';
 import dotenv from 'dotenv';
 import { Server } from 'http';
 import path from 'path';
+import { getApi } from './app/service/blockchain.service';
 dotenv.config();
 
 const clusterMode = Number(process.env.CLUSTER_MODE) === 1;
@@ -57,7 +58,7 @@ const handleMaster = () => {
  
 
 
-const handleChild = () => {
+const handleChild = async () => {
   app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({
@@ -69,8 +70,8 @@ const handleChild = () => {
   router.use(nftRouter, userRouter, ipfsRouter, sgxRouter, capsuleRouter, marketPlaceRouter);
   app.use(router);
   const PORT = process.env.PORT || 3000;
-
-  server = app.listen(PORT, () => {
+  await getApi()
+  server = app.listen(PORT, async() => {
     console.log(`Server is running on port ${PORT}.`);
   });
 };
