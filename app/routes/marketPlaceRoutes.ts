@@ -25,16 +25,17 @@ import { createMarketPlace ,
     setlogoUriForMarketPlace
     
 } from "../controllers/MarketPlaceController";
+import { checkMpOwnershipMiddleware } from '../middleware/marketplace';
 
 const marketplaceRouter = Router();
 
 marketplaceRouter.post("/api/createMarketPlace",validationMiddleware(createMarketPlaceSchema),balanceCheckMiddleware(txPallets.marketplace, txActions.create), createMarketPlace);
-marketplaceRouter.post("/api/setCommissionFee",  validationMiddleware(setCommissionFeeSchema), setCommissionFee);
-marketplaceRouter.post("/api/setOwnerForMarketPlace",  validationMiddleware(setOwnerFeeSchema), setOwnerForMarketPlace);
-marketplaceRouter.post("/api/setKindForMarketPlace",  validationMiddleware(setKindSchema), setKindForMarketPlace);
-marketplaceRouter.post("/api/setNameForMarketPlace",  validationMiddleware(setNameSchema), setNameForMarketPlace);
-marketplaceRouter.post("/api/setUriForMarketPlace",  validationMiddleware(setUriSchema), setUriForMarketPlace);
-marketplaceRouter.post("/api/setlogoUriForMarketPlace",  validationMiddleware(setLogoUriSchema), setlogoUriForMarketPlace);
+marketplaceRouter.post("/api/setCommissionFee",  validationMiddleware(setCommissionFeeSchema),checkMpOwnershipMiddleware, setCommissionFee);
+marketplaceRouter.post("/api/setOwnerForMarketPlace",  validationMiddleware(setOwnerFeeSchema),checkMpOwnershipMiddleware, setOwnerForMarketPlace);
+marketplaceRouter.post("/api/setKindForMarketPlace",  validationMiddleware(setKindSchema),checkMpOwnershipMiddleware, setKindForMarketPlace);
+marketplaceRouter.post("/api/setNameForMarketPlace",  validationMiddleware(setNameSchema),checkMpOwnershipMiddleware, setNameForMarketPlace);
+marketplaceRouter.post("/api/setUriForMarketPlace",  validationMiddleware(setUriSchema),checkMpOwnershipMiddleware, setUriForMarketPlace);
+marketplaceRouter.post("/api/setlogoUriForMarketPlace",  validationMiddleware(setLogoUriSchema),checkMpOwnershipMiddleware, setlogoUriForMarketPlace);
 marketplaceRouter.get("/api/getMarketplacesForOwner/:ownerAddress", validationMiddleware(MarketPlaceByOwnerSchema), getMarketplaceDataByOwner);
 marketplaceRouter.get("/api/getMarketplaceById/:id",  validationMiddleware(MarketPlaceByIdSchema), getMarketplaceById);
 marketplaceRouter.get("/api/getMarketplaceByIdfromChain/:id",  validationMiddleware(MarketPlaceByIdSchema),balanceCheckMiddleware(txPallets.marketplace, txActions.setCommissionFee), getMarketplaceByIdFromChain);

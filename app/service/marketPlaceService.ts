@@ -77,7 +77,7 @@ export const setCommissionFeeService=async(mpId:any,commission_fee:any,sender:an
     }
      
 }
-//  
+  
 export const setOwnerService=async(mpId:any,owner:any,sender:any)=>{
     try{
         await runTransaction(txPallets.marketplace, txActions.setOwner, sender, [mpId, owner], false,'marketplace.MarketplaceChangedOwner')
@@ -86,41 +86,6 @@ export const setOwnerService=async(mpId:any,owner:any,sender:any)=>{
     {
         throw err;
     }
-  /*  return new Promise(async (resolve, reject) => {
-        try{
-            const unsub = await (await getApi()).tx.marketplace.setOwner(mpId,owner).signAndSend(sender, ({
-                events = [],
-                status = { isInBlock: false }
-            }) => {
-                if (status.isInBlock){
-                    console.log("hello I'm in block")
-                    events.forEach(async ({
-                        event
-                    }) => {
-                        const {
-                            data,
-                            method,
-                            section
-                        } = event;
-                        console.log('`${section}.${method}`',`${section}.${method}`)
-                        if (`${section}.${method}` === 'marketplace.MarketPlaceCreated') {
-                            //@ts-ignore
-                            const nftId = data[0].toString()
-                            resolve({nftId});
-                            unsub();
-                        } else if(`${section}.${method}`=='system.ExtrinsicFailed'){
-                            reject(`Could not create the NFT in blockchain: details: ${data}`);
-                            unsub();
-                        }
-                    });
-                }
-            });
-        }catch(err){
-            //console.log("we cought Error here")
-            console.log('createNft err', err)
-            reject(err)
-        }
-    });*/
 }
 export const setKindService=async(mpId:any,kind:any,sender:any)=>{
     try{
