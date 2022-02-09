@@ -24,6 +24,23 @@ const nftByIdGql = (id:number) => gql `
         marketplaceId,
         isCapsule,
 }
+nftTransferEntities(
+  orderBy: [TIMESTAMP_DESC]
+  first:1
+  filter: { 
+            and : [
+              {nftId:{equalTo:"${id}"}}
+              {typeOfTransaction:{equalTo: "transfer"}}
+            ]
+          } 
+) {
+  nodes {
+    from
+    to
+    typeOfTransaction
+    timestamp
+  }
+}
 }
 `;
 
@@ -120,12 +137,14 @@ const mpByOwnerGql = (owner:any) => gql `
 const mapResponseField = (requestPromise:any, responseField:any) => new Promise(async (resolve, reject) => {
     try {
         const response = await requestPromise.catch(reject);
+        console.log('response', response)
         resolve(response[responseField]);
     } catch (e) {
         reject(e);
     }
 })
 
+export const getNftByIdWithLastOwner = async (id:any) => await requestIndexer(nftByIdGql(id))
 
 export const getNftById = (id:any) => mapResponseField(requestIndexer(nftByIdGql(id)),'nftEntity')
 

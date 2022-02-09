@@ -161,8 +161,23 @@ const getTransaction = async (txPallet: txPallets, txAction: txActions, txArgs: 
     }
 };
 
-const defaultExtrinsicCallback = ({ events = [], status }: { events: any[], status: any }, sectionMethodSuccess: string, sectionMethodError: string, txArgs: any[], txBatch: boolean, sender: KeyringPair, onSuccessEvent: Function | undefined, resolve: Function, reject: Function) => {
+const getErrorDetails = (dispatchError:any) => {
+    if (dispatchError.isModule) {
+      // for module errors, we have the section indexed, lookup
+      if(api)
+      return api.registry.findMetaError(dispatchError.asModule);
+      else
+      return 'blockchain connection failed!'
+    } else {
+      // Other, CannotLookup, BadOrigin, no extra info
+      return dispatchError.toString();
+    }
+  };
+
+const defaultExtrinsicCallback = ({ events = [], status, dispatchError }: { events: any[], status: any, dispatchError:any }, sectionMethodSuccess: string, sectionMethodError: string, txArgs: any[], txBatch: boolean, sender: KeyringPair, onSuccessEvent: Function | undefined, resolve: Function, reject: Function) => {
     // //console.info('defaultExtrinsicCallback', sectionMethodSuccess, sectionMethodError, txArgs, sender, onSuccessEvent);
+    const errorDetails = dispatchError ? getErrorDetails(dispatchError) : null;
+    // console.log('defaultExtrinsicCallback: errorDetails:', errorDetails)
     if (status.isRetracted) {
         const retractedStr = `Transaction isRetracted ${status.asRetracted}`;
         //console.warn(retractedStr);
@@ -185,7 +200,7 @@ const defaultExtrinsicCallback = ({ events = [], status }: { events: any[], stat
                     }
                     break;
                 case sectionMethodError:
-                    reject({ event: sectMethStr, data });
+                    reject({ event: sectMethStr, data , errorDetails});
                     break;
                 case defaultBatchSectMethSuccess:
                     if (txBatch) {
@@ -194,7 +209,7 @@ const defaultExtrinsicCallback = ({ events = [], status }: { events: any[], stat
                     break;
                 case defaultBatchSectMethError:
                     if (txBatch) {
-                        reject({ event: sectMethStr, data });
+                        reject({ event: sectMethStr, data, errorDetails });
                     }
                     break;
             }
@@ -230,13 +245,21 @@ export const runTransaction = async (
         txBatch = true;
     }
     const transaction = await getTransaction(txPallet, txAction, txArgs, txBatch, extraTransactions);
-    let unsubscribe;
+    let unsubscribe:object;
     const transactionCallbackPromise = new Promise(async (resolve, reject) => {
         unsubscribe = await transaction
             .signAndSend(sender, (response: any) => transactionCallback(response, sectionMethodSuccess, sectionMethodError, txArgs, txBatch, sender, onSuccessEvent, resolve, reject))
             .catch(reject);
     });
-    transactionCallbackPromise.then(unsubscribe).catch(unsubscribe);
+    transactionCallbackPromise.then(async()=>{
+        if (unsubscribe && typeof unsubscribe === 'function') {
+            await unsubscribe();
+        }
+    }).catch(async()=>{
+        if (unsubscribe && typeof unsubscribe === 'function') {
+            await unsubscribe();
+        }
+    });
     return transactionCallbackPromise;
 };
 

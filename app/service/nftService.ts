@@ -217,34 +217,16 @@ export const isNftCapsule = async (nftId: any) => {
 export const checkIsNftCapsule = (nftData:any)=> nftData.isCapsule === true;
 
 export const listNft = async (nftId: number, seed: string, price: number, mpId: number): Promise<any> => {
-    try{
-        const sender = await getUserFromSeed(seed);
-        return runTransaction(txPallets.marketplace, txActions.list, sender, [nftId, getChainPrice(price), mpId], false, 'marketplace.NftListed')
-    }
-    catch (err)
-    {
-        return err
-    }
+    const sender = await getUserFromSeed(seed);
+    return runTransaction(txPallets.marketplace, txActions.list, sender, [nftId, getChainPrice(price), mpId], false, 'marketplace.NftListed')
 };
 export const lockNftSerie = async (seriesId: string, seed: string): Promise<any> => {
-    try{
-        const sender = await getUserFromSeed(seed);
-        return runTransaction(txPallets.nfts, txActions.finishSeries, sender, [seriesId], false)
-    }
-    catch (err)
-    {
-        return err
-    }
+    const sender = await getUserFromSeed(seed);
+    return runTransaction(txPallets.nfts, txActions.finishSeries, sender, [seriesId], false)
 };
 export const unlistNft = async (nftId: number, seed: string): Promise<any> => {
-    try{
-        const sender = await getUserFromSeed(seed);
-        return runTransaction(txPallets.marketplace, txActions.unlist, sender, [nftId], false, 'marketplace.NftUnlisted')
-    }
-    catch (err)
-    {
-        return err
-    }
+    const sender = await getUserFromSeed(seed);
+    return runTransaction(txPallets.marketplace, txActions.unlist, sender, [nftId], false, 'marketplace.NftUnlisted')
 };
 
 export const encryptAndUploadService=async(fileName:any)=>{
@@ -315,12 +297,7 @@ export const decryptNftOrCapsule = async (nftId: number, seed: string): Promise<
     return `data:${contentType};base64,${base64Data}`;
 };
 
-export const nftTransferService=async(nftId:any,recieverAddress:any,sender:any) => {
-    try{
-        await runTransaction(txPallets.nfts, txActions.transfer, sender, [nftId ,recieverAddress ], false, txEvent.nftsTransfered)
-    }
-    catch (err)
-    {
-        return err
-    }
+export const nftTransferService=async(nftId:any,recieverAddress:any,seed:any) => {
+    const sender = await getUserFromSeed(seed);
+    return runTransaction(txPallets.nfts, txActions.transfer, sender, [nftId ,recieverAddress ], false, txEvent.nftsTransfered)
 };

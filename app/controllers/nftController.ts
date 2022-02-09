@@ -27,7 +27,8 @@ import {
   getNftById,
   getNftsByOwner,
   getNftIdsBySeries,
-  getNftsByIds
+  getNftsByIds,
+  getNftByIdWithLastOwner
 
 } from '../service/ternoa.indexer';
 
@@ -43,13 +44,18 @@ const localKeysFolder = process.env.LOCAL_KEYS_FOLDER || './nftKeys/';
 
 export const getNftDataFromIndexer = async (req: Request, res: Response) => {
   const { id } = req.params;
-  console.log(await (await getApi()).query.nfts.series());
   try {
-    const nftIndexerData = await getNftById(id);
+    const nftIndexerData = await getNftByIdWithLastOwner(id);
+    let Data= {...nftIndexerData.nftEntity, }
+    if(nftIndexerData && nftIndexerData.nftTransferEntities && nftIndexerData.nftTransferEntities.nodes &&nftIndexerData.nftTransferEntities.nodes[0]){
+      Data ={...Data, previousOwner:nftIndexerData.nftTransferEntities.nodes[0].from}
+    }else {
+      Data ={...Data, previousOwner:null}
+    }
     res.status(200).json(
       {
         Message :`Nft Data For ID: ${id}`,
-        Data:nftIndexerData
+        Data
       });
   }
   catch (err) {
@@ -77,7 +83,7 @@ export const getNftIdBySeries = async (req: Request, res: Response) => {
     catch (err) {
       res.status(500).json({ 
         message: 'Unable to Fetch Nft Ids', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
     }
 };
@@ -100,7 +106,7 @@ export const getNFTsByOwner = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to Fetch Nft Ids', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 
@@ -129,7 +135,7 @@ export const encryptAndUploadMedia = async (req: Request, res: Response) => {
   {
     res.status(500).json({ 
         message: 'Unable to Encrypt and Upload file to Ipfs.', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 
@@ -150,7 +156,7 @@ export const uploadNFTJson = async (req: Request, res: Response) => {
   } catch (err) {
       res.status(500).json({ 
         message: 'Unable to Upload Nft Json to Ipfs', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 };
@@ -180,7 +186,7 @@ export const mintNFT = async (req: Request, res: Response) => {
       res.status(500).json(
         {
           message:'Error creating Nft on blockchain!',
-          details:`${err}`
+          details:err && (err as any).message?(err as any).message:err
         }
       )
     }
@@ -227,7 +233,7 @@ export const createNewNFT = async (req: Request, res: Response,next:NextFunction
     res.status(500).json(
       {
         message:'Error creating Nft on blockchain!',
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       })
   }
 }
@@ -273,7 +279,7 @@ export const burnNft = async (req: Request, res: Response) => {
        res.status(500).json(
       {
         message:'Error Burning Nft on blockchain!',
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       })
     }
   }
@@ -294,7 +300,7 @@ export const NftSale = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to List this Nft for sale.', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 }
@@ -308,7 +314,7 @@ export const serieLock = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
         message: 'Unable to Lock Nft Serie.', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
     });
   }
 }
@@ -322,7 +328,7 @@ export const NftUnlist = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
         message: 'Unable to Unlist Nft from Sale.', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 }
@@ -341,7 +347,7 @@ export const decryptNft = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
         message: 'Unable to Decrypt Nft.', 
-        details:`${err}`
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 } 
@@ -350,8 +356,7 @@ export const nftTransfer= async (req: Request, res: Response) => {
   const {nftId,recieverAddress}=req.body;
   try{
     const seed=getSeedFromRequest(req);
-    const sender=await getUserFromSeed(seed);
-    await nftTransferService(nftId,recieverAddress,sender);
+    await nftTransferService(nftId,recieverAddress,seed);
     res.status(200).json({
         message:`Success! transfer Nft with Id: ${nftId} to Account: ${recieverAddress}.`,
     })
@@ -360,7 +365,7 @@ export const nftTransfer= async (req: Request, res: Response) => {
     res.status(500).json(
       {
         message:`Unable to transfer Nft with Id: ${nftId} to Account: ${recieverAddress} `,
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       }
     )
   }
