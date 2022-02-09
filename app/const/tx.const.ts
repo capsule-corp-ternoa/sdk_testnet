@@ -27,7 +27,8 @@ export enum txActions {
     setIpfsReference = 'setIpfsReference',
     //associatedAccounts
     setAltvrUsername = 'setAltvrUsername',
-
+    //marketplace
+    setCommissionFee='setCommissionFee'
 };
 export enum chainQuery {
     nftMintFee = 'nftMintFee',
@@ -37,10 +38,12 @@ export enum chainQuery {
 export enum txEvent {
     nftsCreated = 'nfts.Created',
     nftsBurned = 'nfts.Burned',
+
     nftsTransfered='nfts.Transfered',
     BatchCompleted='utility.BatchCompleted',
     CapsuleIpfsReferenceChanged='capsules.CapsuleIpfsReferenceChanged',
     CapsuleCreated='capsules.CapsuleCreated',
     CapsuleRemoved='capsules.CapsuleRemoved',
-    MarketplaceCreated='marketplace.MarketplaceCreated'
+    MarketplaceCreated='marketplace.MarketplaceCreated',
+    setCommissionFee='marketplace.setCommissionFee'
 }

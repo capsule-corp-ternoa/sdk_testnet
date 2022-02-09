@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { createMarketPlaceService ,getMarketplaceDataByOwner as ownerDataforMp,getMarketplaceDataById,getMarketplaceDataByIdFromBlockChain} from '../service/marketPlaceService';
+import { createMarketPlaceService ,getMarketplaceDataByOwner as ownerDataforMp,getMarketplaceDataById,getMarketplaceDataByIdFromBlockChain,setCommissionFeeService} from '../service/marketPlaceService';
 
 
 import { 
@@ -96,6 +96,24 @@ export const getMarketplaceByIdFromChain = async (req: Request, res: Response) =
     {
         res.status(500).json({
             message:"Unable to Fetch Data",
+            Details:err
+        })
+    }
+}
+
+export const setCommissionFee= async (req: Request, res: Response) => {
+    const {mpId,commission_fee}=req.body;
+    const seed=getSeedFromRequest(req);
+    try{
+        const sender=getUserFromSeed(seed);
+        await setCommissionFeeService(mpId,commission_fee,sender);
+        res.status(200).json({
+             message:`Marketplace of Id:${mpId}'s commission updated to: ${commission_fee}`
+        })
+    }
+    catch(err){
+          res.status(500).json({
+            message:`Unable to update commission fee on marketplace with Id:${mpId}.`,
             Details:err
         })
     }

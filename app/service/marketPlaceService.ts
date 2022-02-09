@@ -65,5 +65,14 @@ export const getMarketplaceDataByIdFromBlockChain=async (id:number)=>{
     catch(err){
         throw err;
     }
-    
+}
+
+export const setCommissionFeeService=async(mpId:any,commission_fee:any,sender:any)=>{
+    try{
+        await runTransaction(txPallets.marketplace, txActions.setCommissionFee, sender, [mpId, commission_fee], false, txEvent.setCommissionFee)
+    }
+    catch(err)
+    {
+        throw err;
+    }
 }

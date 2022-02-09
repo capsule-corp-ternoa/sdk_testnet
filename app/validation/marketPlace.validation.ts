@@ -22,3 +22,12 @@ export const MarketPlaceByIdSchema: Joi.ObjectSchema = Joi.object({
         id:Joi.string().required(),
     }
 })
+
+
+export const setCommissionFeeSchema: Joi.ObjectSchema = Joi.object({
+    body:{
+        mpId:Joi.string().required(),
+        commission_fee:Joi.string().required(),
+        seed:Joi.string().optional()
+    }
+})
