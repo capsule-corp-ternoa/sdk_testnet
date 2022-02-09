@@ -49,3 +49,21 @@ export const getMarketplaceDataById=async (id:number)=>{
     }
     
 }
+
+export const getMarketplaceDataByIdFromBlockChain=async (id:number)=>{
+    try{
+        const marketPlaceData=JSON.parse(JSON.stringify(await (await getApi()).query.marketplace.marketplaces(id)))
+        if(marketPlaceData)
+        {
+            return marketPlaceData;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    catch(err){
+        throw err;
+    }
+    
+}
