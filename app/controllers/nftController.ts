@@ -313,11 +313,11 @@ export const serieLock = async (req: Request, res: Response) => {
   }
 }
 export const NftUnlist = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const nftId  = req.body.nftId;
   const seed = getSeedFromRequest(req);;
   try {
-    await unlistNft(Number(id), seed);
-    res.status(200).json({Message:`NFT ${id} was successfully unlisted`});
+    await unlistNft(Number(nftId), seed);
+    res.status(200).json({Message:`NFT ${nftId} was successfully unlisted`});
   }
   catch (err) {
     res.status(500).json({ 
@@ -350,16 +350,11 @@ export const nftTransfer= async (req: Request, res: Response) => {
   const {nftId,recieverAddress}=req.body;
   try{
     const seed=getSeedFromRequest(req);
-    const sender=getUserFromSeed(seed);
-    const reciever=getUserFromSeed(recieverAddress);
-    const data = await nftTransferService(nftId,reciever,sender);
-    if(data)
-    {
-      res.status(200).json({
+    const sender=await getUserFromSeed(seed);
+    await nftTransferService(nftId,recieverAddress,sender);
+    res.status(200).json({
         message:`Success! transfer Nft with Id: ${nftId} to Account: ${recieverAddress}.`,
-        nftId:data
-      })
-    }
+    })
   }
   catch(err){
     res.status(500).json(

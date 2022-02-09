@@ -317,11 +317,7 @@ export const decryptNftOrCapsule = async (nftId: number, seed: string): Promise<
 
 export const nftTransferService=async(nftId:any,recieverAddress:any,sender:any) => {
     try{
-        console.log(nftId)
-        const data= await runTransaction(txPallets.nfts, txActions.transfer, sender, [nftId ,recieverAddress ], false, 'nfts.transfer')
-        const nft_id=data
-        console.log(nft_id)
-        return nft_id;
+        await runTransaction(txPallets.nfts, txActions.transfer, sender, [nftId ,recieverAddress ], false, txEvent.nftsTransfered)
     }
     catch (err)
     {

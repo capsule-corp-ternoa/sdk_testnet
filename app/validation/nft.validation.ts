@@ -20,10 +20,8 @@ export const nftMintSchema: Joi.ObjectSchema = Joi.object({
     
 })
 export const unlistNftSchema: Joi.ObjectSchema = Joi.object({
-    params: {
-        id: Joi.number().required(),
-    },
     body: {
+        nftId: Joi.number().required(),
         seed: Joi.string().optional(),
     }
 
@@ -108,5 +106,13 @@ export const nftSaleSchema: Joi.ObjectSchema = Joi.object({
 export const getNftDataByOwnerScehma:Joi.ObjectSchema=Joi.object({
     params: {
         ownerAddress: Joi.string().required(),
+    }
+})
+
+export const nftTransferScehma:Joi.ObjectSchema=Joi.object({
+    body: {
+        nftId: Joi.string().required(),
+        recieverAddress:Joi.string().required(),
+        seed: Joi.string().optional()
     }
 })

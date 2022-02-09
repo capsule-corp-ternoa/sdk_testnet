@@ -37,6 +37,7 @@ export enum chainQuery {
 export enum txEvent {
     nftsCreated = 'nfts.Created',
     nftsBurned = 'nfts.Burned',
+    nftsTransfered='nfts.Transfered',
     BatchCompleted='utility.BatchCompleted',
     CapsuleIpfsReferenceChanged='capsules.CapsuleIpfsReferenceChanged',
     CapsuleCreated='capsules.CapsuleCreated',
