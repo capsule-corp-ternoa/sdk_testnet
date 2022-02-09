@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { createMarketPlaceService ,setUriService,getMarketplaceDataByOwner as ownerDataforMp,setlogoUriService,getMarketplaceDataById,setNameService,setKindService,getMarketplaceDataByIdFromBlockChain,setCommissionFeeService,setOwnerService} from '../service/marketPlaceService';
+import { createMarketPlaceService ,setUriService,getMarketplaceDataByOwner as ownerDataforMp,setlogoUriService,getMarketplaceDataById,setNameService,setKindService,getMarketplaceDataByIdFromBlockChain,setCommissionFeeService,setOwnerService, getAllMarketplaceDataFromBlockChain} from '../service/marketPlaceService';
 
 
 import { 
@@ -69,6 +69,27 @@ export const getMarketplaceById = async (req: Request, res: Response) => {
     }
     catch(err)
     {
+        res.status(500).json({
+            message:"Unable to Fetch Data",
+            Details:err
+        })
+    }
+}
+
+export const getAllMarketplaceFromChain = async (req: Request, res: Response) => {
+    try{
+        const data=await getAllMarketplaceDataFromBlockChain();
+        if(data)
+        {
+            res.status(200).json({
+                message:`All Registered Marketplaces`,
+                data:data
+            })
+        }
+    }
+    catch(err)
+    {
+        console.log('getAllMarketplaceFromChain::', err)
         res.status(500).json({
             message:"Unable to Fetch Data",
             Details:err

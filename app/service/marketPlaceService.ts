@@ -50,6 +50,30 @@ export const getMarketplaceDataById=async (id:number)=>{
     
 }
 
+export const getAllMarketplaceDataFromBlockChain=async ()=>{
+    try{
+        const allMarketPlaceData=await (await getApi()).query.marketplace.marketplaces.entries()
+        if(allMarketPlaceData && allMarketPlaceData.length)
+        {
+            return allMarketPlaceData.map((mpItem:any) => {
+                const formatedData = JSON.parse(JSON.stringify(mpItem))[1];
+                return {
+                  id: Number(mpItem[0].args),
+                  ...formatedData,
+                };
+              });
+        }
+        else
+        {
+            return null;
+        }
+    }
+    catch(err){
+        console.log('getAllMarketplaceDataFromBlockChain', err)
+        throw err;
+    }
+}
+
 export const getMarketplaceDataByIdFromBlockChain=async (id:number)=>{
     try{
         const marketPlaceData=JSON.parse(JSON.stringify(await (await getApi()).query.marketplace.marketplaces(id)))

@@ -22,7 +22,8 @@ import { createMarketPlace ,
     setOwnerForMarketPlace,
     setNameForMarketPlace,
     setUriForMarketPlace,
-    setlogoUriForMarketPlace
+    setlogoUriForMarketPlace,
+    getAllMarketplaceFromChain
     
 } from "../controllers/MarketPlaceController";
 import { checkMpOwnershipMiddleware } from '../middleware/marketplace';
@@ -39,5 +40,6 @@ marketplaceRouter.post("/api/setlogoUriForMarketPlace",  validationMiddleware(se
 marketplaceRouter.get("/api/getMarketplacesForOwner/:ownerAddress", validationMiddleware(MarketPlaceByOwnerSchema), getMarketplaceDataByOwner);
 marketplaceRouter.get("/api/getMarketplaceById/:id",  validationMiddleware(MarketPlaceByIdSchema), getMarketplaceById);
 marketplaceRouter.get("/api/getMarketplaceByIdfromChain/:id",  validationMiddleware(MarketPlaceByIdSchema), getMarketplaceByIdFromChain);
+marketplaceRouter.get("/api/getAllMarketplaces", getAllMarketplaceFromChain);
 
 export default marketplaceRouter;
