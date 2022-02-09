@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { createMarketPlaceService ,getMarketplaceDataByOwner as ownerDataforMp,getMarketplaceDataById,getMarketplaceDataByIdFromBlockChain,setCommissionFeeService} from '../service/marketPlaceService';
+import { createMarketPlaceService ,setUriService,getMarketplaceDataByOwner as ownerDataforMp,setlogoUriService,getMarketplaceDataById,setNameService,setKindService,getMarketplaceDataByIdFromBlockChain,setCommissionFeeService,setOwnerService} from '../service/marketPlaceService';
 
 
 import { 
@@ -21,7 +21,7 @@ export const createMarketPlace = async (req: Request, res: Response) => {
     catch (err) {
         res.status(500).json({ 
             message: 'Unable to Create a market place on Blockchain.', 
-            details:`${err}`
+            details:err
         });
     }
 }
@@ -105,7 +105,7 @@ export const setCommissionFee= async (req: Request, res: Response) => {
     const {mpId,commission_fee}=req.body;
     const seed=getSeedFromRequest(req);
     try{
-        const sender=getUserFromSeed(seed);
+        const sender=await getUserFromSeed(seed);
         await setCommissionFeeService(mpId,commission_fee,sender);
         res.status(200).json({
              message:`Marketplace of Id:${mpId}'s commission updated to: ${commission_fee}`
@@ -114,6 +114,97 @@ export const setCommissionFee= async (req: Request, res: Response) => {
     catch(err){
           res.status(500).json({
             message:`Unable to update commission fee on marketplace with Id:${mpId}.`,
+            Details:err
+        })
+    }
+}
+
+export const setOwnerForMarketPlace= async (req: Request, res: Response) => {
+    const {mpId,owner}=req.body;
+    const seed=getSeedFromRequest(req);
+    try{
+        const sender=await getUserFromSeed(seed);
+        await setOwnerService(mpId,owner,sender);
+        res.status(200).json({
+             message:`Marketplace of Id:${mpId}'s trasfered to: ${owner}`
+        })
+    }
+    catch(err){
+          res.status(500).json({
+            message:`Unable to update owner of marketplace with Id:${mpId}.`,
+            Details:err
+        })
+    }
+}
+
+export const setKindForMarketPlace= async (req: Request, res: Response) => {
+    const {mpId,kind}=req.body;
+    const seed=getSeedFromRequest(req);
+    try{
+        const sender=await getUserFromSeed(seed);
+        await setKindService(mpId,kind,sender);
+        res.status(200).json({
+             message:`Marketplace of Id:${mpId}'s kind changed to: ${kind}`
+        })
+    }
+    catch(err){
+          res.status(500).json({
+            message:`Unable to update kind of marketplace with Id:${mpId}.`,
+            Details:err
+        })
+    }
+}
+
+export const setNameForMarketPlace= async (req: Request, res: Response) => {
+    const {mpId,name}=req.body;
+    const seed=getSeedFromRequest(req);
+    try{
+        const sender=await getUserFromSeed(seed);
+        await setNameService(mpId,name,sender);
+        res.status(200).json({
+             message:`Marketplace of Id:${mpId}'s name changed to: ${name}`
+        })
+    }
+    catch(err){
+          res.status(500).json({
+            message:`Unable to update name of marketplace with Id:${mpId}.`,
+            Details:err
+        })
+    }
+}
+
+export const setUriForMarketPlace= async (req: Request, res: Response) => {
+    const {mpId,uri}=req.body;
+    const seed=getSeedFromRequest(req);
+    try{
+        const sender=await getUserFromSeed(seed);
+        await setUriService(mpId,uri,sender);
+        res.status(200).json({
+             message:`Marketplace of Id:${mpId}'s uri changed to: ${uri}`
+        })
+    }
+    catch(err){
+
+          res.status(500).json({
+            message:`Unable to update uri of marketplace with Id:${mpId}.`,
+            Details:err
+        })
+    }
+}
+
+export const setlogoUriForMarketPlace= async (req: Request, res: Response) => {
+    const {mpId,logoUri}=req.body;
+    const seed=getSeedFromRequest(req);
+    try{
+        const sender=await getUserFromSeed(seed);
+        await setlogoUriService(mpId,logoUri,sender);
+        res.status(200).json({
+            message:`Marketplace of Id ChangedId:${mpId}'s logouri changed to: ${logoUri}`
+        })
+    }
+    catch(err){
+          res.status(500).json({
+            message:`Unable to update logouri of marketplace with Id:${mpId}.`,
             Details:err
         })
     }

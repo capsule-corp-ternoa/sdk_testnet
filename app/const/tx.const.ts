@@ -28,7 +28,12 @@ export enum txActions {
     //associatedAccounts
     setAltvrUsername = 'setAltvrUsername',
     //marketplace
-    setCommissionFee='setCommissionFee'
+    setCommissionFee='setCommissionFee',
+    setOwner='setOwner',
+    setKind='setMarketType',
+    setName='setName',
+    setUri='setUri',
+    setLogoUri='setLogoUri'
 };
 export enum chainQuery {
     nftMintFee = 'nftMintFee',
