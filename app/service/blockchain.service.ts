@@ -87,6 +87,12 @@ export const getNFTMintPrice = async () => {
     return balance
 }
 
+export const getMarketplaceMintPrice = async () => {
+    const MarketplaceMintPrice = await (await getApi()).query.marketplace.marketplaceMintFee();
+    balance = (Number(unFormatBalance(MarketplaceMintPrice)) / Math.pow(10, 18))
+    return balance
+}
+
 export const getMPMintPrice = async () => {
     const mpMintPrice = await (await getApi()).query.marketplace.marketplaceMintFee();
     balance = (Number(unFormatBalance(mpMintPrice)) / Math.pow(10, 18))
@@ -294,6 +300,12 @@ export const BalanceCheck = async (addressOrSeed: string, pallet: string, action
                     const nftMintFee = await getNFTMintPrice();
                     return (userBalance > nftMintFee + extrinsicsFee)
             }
+        case txPallets.marketplace:
+            switch(action){
+                case txActions.create:
+                    const mpMintPrice=await getMarketplaceMintPrice();
+                    return (userBalance > mpMintPrice + extrinsicsFee)
+            }        
         case txPallets.capsules:
             switch (action) {
                 case txActions.createFromNft:
