@@ -142,7 +142,6 @@ export const burnNftsBatchService =async (nftIds: any, user: any) => {
     try{
         const nftTransactions = await Promise.all(nftIds.map((nftId: string) => burnNftTransaction(nftId)));
         const { event, data } = await runTransaction(txPallets.utility, txActions.batch, user, [nftTransactions], false, txEvent.nftsBurned)
-        console.log('burnNftsBatchService : data', data);
         const nft_Id =  data[0].toString();
         return nft_Id;
     }
