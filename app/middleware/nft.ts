@@ -122,7 +122,7 @@ export const checkSerieinDraftMiddleWare=async (req: Request, res: Response, nex
     const SeriesData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.series(nftData.series_id)));
     if(SeriesData)
     {
-        if(SeriesData.draft===true){res.status(403).send("Forbidden!! Serie is in Draft! Lock to continue Operation!")}
+        if(SeriesData.draft===true){res.status(403).send(`Forbidden!! Series is in Draft! Lock NFT Series "${nftData.series_id}" to continue Operation!`)}
         else{next()}
     }
     else{res.status(403).send("Forbidden!! SeriesId Not valid or not available!")}
