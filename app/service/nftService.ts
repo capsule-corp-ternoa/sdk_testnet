@@ -133,7 +133,8 @@ export const createNft = async (nftIpfs: string, seriesId: string, user: any) =>
         return nftId;
     }
     catch(err){
-        return err
+        console.log('createNft err:::', err)
+        throw err
     }
 };
 

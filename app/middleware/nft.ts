@@ -106,14 +106,16 @@ export const CheckPreviewFile=async (req: Request, res: Response, next: NextFunc
 
 export const checkSerieLockedMiddleWare=async (req: Request, res: Response, next: NextFunction)=>{ 
     const {seriesId}=req.body;
-    const SeriesData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.series(seriesId)));
-    if(SeriesData)
-    {
-        if(SeriesData.draft===true){next()}
-        else{res.status(403).send("Forbidden!! Serie is Locked!");}
+    if(seriesId){
+        const SeriesData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.series(seriesId)));
+        if(SeriesData)
+        {
+            if(SeriesData.draft===true){next()}
+            else{res.status(403).send("Forbidden!! Serie is Locked!");}
+        }
+        else{next()}
     }
     else{next()}
-    
 }
 
 export const checkSerieinDraftMiddleWare=async (req: Request, res: Response, next: NextFunction)=>{ 
