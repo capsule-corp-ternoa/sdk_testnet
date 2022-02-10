@@ -46,17 +46,25 @@ export const getNftDataFromIndexer = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const nftIndexerData = await getNftByIdWithLastOwner(id);
-    let Data= {...nftIndexerData.nftEntity, }
-    if(nftIndexerData && nftIndexerData.nftTransferEntities && nftIndexerData.nftTransferEntities.nodes &&nftIndexerData.nftTransferEntities.nodes[0]){
-      Data ={...Data, previousOwner:nftIndexerData.nftTransferEntities.nodes[0].from}
+    if(nftIndexerData && nftIndexerData.nftEntity){
+      let Data= {...nftIndexerData.nftEntity, }
+      if(nftIndexerData && nftIndexerData.nftTransferEntities && nftIndexerData.nftTransferEntities.nodes &&nftIndexerData.nftTransferEntities.nodes[0]){
+        Data ={...Data, previousOwner:nftIndexerData.nftTransferEntities.nodes[0].from}
+      }else {
+        Data ={...Data, previousOwner:null}
+      }
+      res.status(200).json(
+        {
+          Message :`Nft Data For ID: ${id}`,
+          Data
+        });
     }else {
-      Data ={...Data, previousOwner:null}
+      res.status(200).json(
+        {
+          Message :`no data For ID: ${id}`,
+        });
     }
-    res.status(200).json(
-      {
-        Message :`Nft Data For ID: ${id}`,
-        Data
-      });
+  
   }
   catch (err) {
     res.status(500).send(
@@ -245,16 +253,22 @@ export const burnNftBatch = async (req: Request, res: Response) => {
   const ownerAddress= signer.address
   const nftsData: any = await getNftsByIds(nftIds)
   const nftsNodes = nftsData?.nodes as any[]
-  console.log('nftsNodes length', nftsNodes.length)
-  console.log('nftsNodes', nftsNodes)
+  // console.log('nftsNodes length', nftsNodes.length)
+  // console.log('nftsNodes', nftsNodes)
   if (nftsNodes?.length === 0) {res.status(403).json('No nfts to burn'); return;}
   if (nftsNodes?.length !== nftIds.length) {res.status(403).json('Some nfts are already burnt'); return;}
-  if (nftsNodes.findIndex(x => x.isCapsule) !== -1) {res.status(403).json('Some nfts are capsules and cannot be burnt'); return;}
-  if (nftsNodes.findIndex(x => x.owner === ownerAddress) !== -1) {res.status(403).json('You do not own all nfts'); return;}
+  if (nftsNodes.findIndex(x => x.isCapsule) !== -1) {
+    res.status(403).json('Some nfts are capsules and cannot be burnt'); 
+    return;}
+  if (nftsNodes.findIndex(x => x.owner !== ownerAddress) !== -1) {
+    console.log('not owned', nftsNodes.filter(y=> y.owner !== ownerAddress))
+    res.status(403).json('You do not own all nfts'); return;
+  }
     try {
       await burnNftsBatchService(nftIds,signer)
       res.status(200).json({
-        nftId: req.body.nftIds
+        message:"nfts burned",
+        nftIds: req.body.nftIds
       })
     }
     catch (err) {
