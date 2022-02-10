@@ -137,7 +137,6 @@ const mpByOwnerGql = (owner:any) => gql `
 const mapResponseField = (requestPromise:any, responseField:any) => new Promise(async (resolve, reject) => {
     try {
         const response = await requestPromise.catch(reject);
-        console.log('response', response)
         resolve(response[responseField]);
     } catch (e) {
         reject(e);
