@@ -15,7 +15,7 @@ export const createMarketPlace = async (req: Request, res: Response) => {
         const data=await createMarketPlaceService(name, commission_fee, kind, uri, logoUri, sender);
         res.status(200).json({
             Message:`MarketPlace Created on BlockChain.`,
-            Data:data
+            id:data
     });
     }
     catch (err) {
