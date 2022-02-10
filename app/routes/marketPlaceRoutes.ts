@@ -37,8 +37,8 @@ marketplaceRouter.post("/api/setKindForMarketPlace",  validationMiddleware(setKi
 marketplaceRouter.post("/api/setNameForMarketPlace",  validationMiddleware(setNameSchema),balanceCheckMiddleware(txPallets.marketplace, txActions.setName),checkMpOwnershipMiddleware, setNameForMarketPlace);
 marketplaceRouter.post("/api/setUriForMarketPlace",  validationMiddleware(setUriSchema),balanceCheckMiddleware(txPallets.marketplace, txActions.setUri),checkMpOwnershipMiddleware, setUriForMarketPlace);
 marketplaceRouter.post("/api/setlogoUriForMarketPlace",  validationMiddleware(setLogoUriSchema),balanceCheckMiddleware(txPallets.marketplace, txActions.setLogoUri),checkMpOwnershipMiddleware, setlogoUriForMarketPlace);
-marketplaceRouter.get("/api/getMarketplacesForOwner/:ownerAddress", validationMiddleware(MarketPlaceByOwnerSchema), getMarketplaceDataByOwner);
-marketplaceRouter.get("/api/getMarketplaceById/:id",  validationMiddleware(MarketPlaceByIdSchema), getMarketplaceById);
+// marketplaceRouter.get("/api/getMarketplacesForOwner/:ownerAddress", validationMiddleware(MarketPlaceByOwnerSchema), getMarketplaceDataByOwner);
+// marketplaceRouter.get("/api/getMarketplaceById/:id",  validationMiddleware(MarketPlaceByIdSchema), getMarketplaceById);
 marketplaceRouter.get("/api/getMarketplaceByIdfromChain/:id",  validationMiddleware(MarketPlaceByIdSchema), getMarketplaceByIdFromChain);
 marketplaceRouter.get("/api/getAllMarketplaces", getAllMarketplaceFromChain);
 
