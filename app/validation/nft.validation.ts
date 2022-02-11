@@ -86,7 +86,7 @@ export const decryptNftSchema : Joi.ObjectSchema = Joi.object({
 export const getNftIdBySeriesSchema:Joi.ObjectSchema = Joi.object({
     body:{
         seriesId:Joi.string().required(),
-        seed: Joi.string().optional()
+        ownerAddress: Joi.string().optional()
     }
 });
 export const serieLockSchema: Joi.ObjectSchema = Joi.object({

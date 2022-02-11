@@ -76,11 +76,9 @@ export const getNftDataFromIndexer = async (req: Request, res: Response) => {
 };
 
 export const getNftIdBySeries = async (req: Request, res: Response) => {
-  const { seriesId } = req.body;
-  const seed = getSeedFromRequest(req);
+  const { seriesId, ownerAddress } = req.body;
     try {
-      const sender=await getUserFromSeed(seed);
-      const nftIndexerData = await getNftIdsBySeries(seriesId,sender.address);
+      const nftIndexerData = await getNftIdsBySeries(seriesId,ownerAddress);
       res.status(200).json(
         {
           Message:`Nft ids against Series Id: ${seriesId}`,
