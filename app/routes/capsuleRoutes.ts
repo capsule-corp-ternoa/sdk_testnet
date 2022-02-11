@@ -21,15 +21,17 @@ import { contextSetterMiddleware } from '../middleware/common';
 import {validateUploadCapsuleJsonMiddleware} from '../middleware/capsule';
 const capsuleRouter = Router();
 
-capsuleRouter.post("/api/capsuleItemEncrypt",validationMiddleware(capsuleItemEncryptSchema), capsuleItemEncrypt);
-capsuleRouter.post("/api/uploadCapsuleJson",validationMiddleware(uploadCapsuleJsonSchema), validateUploadCapsuleJsonMiddleware,uploadCapsuleJson);
-capsuleRouter.post("/api/addFileToCapsule",validationMiddleware(addFileToCapsuleschema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.setIpfsReference),checkNftOwnershipMiddleware,checkNFTCapsuleMiddleware,addFileToCapsule);
-capsuleRouter.post("/api/nftToCapsule", validationMiddleware(nftToCapsuleSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.createFromNft),checkNFTNotCapsuleMiddleware,checkNftOwnershipMiddleware, nftToCapsule);
-capsuleRouter.post("/api/CapsuleToNft",validationMiddleware(capsuleRemoveSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.remove),checkNFTCapsuleMiddleware,checkNftOwnershipMiddleware,CapsuleToNft);
-capsuleRouter.post("/api/createCapsule",validationMiddleware(capsuleCreateSchema), balanceCheckMiddleware(txPallets.capsules, txActions.create),createCapsule);
-capsuleRouter.post("/api/setIpfsReference",validationMiddleware(setIpfsReferenceSchema), contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.setIpfsReference),checkNftOwnershipMiddleware,checkNFTCapsuleMiddleware, setIpfsReference);
-capsuleRouter.get("/api/CapsuleItems/:nftId",validationMiddleware(getCapsuleItemsSchema), CapsuleItems);
-capsuleRouter.get("/api/getCapsuleMetadata/:nftId",validationMiddleware(getCapsuleItemsSchema), getCapsuleMetadata);
-capsuleRouter.post("/api/removeCapsuleItem", validationMiddleware(removeFileFromCapsuleSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.setIpfsReference),checkNFTCapsuleMiddleware,checkNftOwnershipMiddleware, removeFileFromCapsule);
+capsuleRouter.post("/api/capsule/media/encrypt-item",validationMiddleware(capsuleItemEncryptSchema), capsuleItemEncrypt);
+capsuleRouter.post("/api/capsule/media/upload-json",validationMiddleware(uploadCapsuleJsonSchema), validateUploadCapsuleJsonMiddleware,uploadCapsuleJson);
+capsuleRouter.post("/api/capsule/file/add",validationMiddleware(addFileToCapsuleschema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.setIpfsReference),checkNftOwnershipMiddleware,checkNFTCapsuleMiddleware,addFileToCapsule);
+capsuleRouter.post("/api/capsule/file/remove", validationMiddleware(removeFileFromCapsuleSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.setIpfsReference),checkNFTCapsuleMiddleware,checkNftOwnershipMiddleware, removeFileFromCapsule);
+capsuleRouter.post("/api/capsule/convert-from-nft", validationMiddleware(nftToCapsuleSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.createFromNft),checkNFTNotCapsuleMiddleware,checkNftOwnershipMiddleware, nftToCapsule);
+capsuleRouter.post("/api/capsule/convert-to-nft",validationMiddleware(capsuleRemoveSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.remove),checkNFTCapsuleMiddleware,checkNftOwnershipMiddleware,CapsuleToNft);
+capsuleRouter.post("/api/capsule/create",validationMiddleware(capsuleCreateSchema), balanceCheckMiddleware(txPallets.capsules, txActions.create),createCapsule);
+capsuleRouter.post("/api/capsule/set-ipfs-reference",validationMiddleware(setIpfsReferenceSchema), contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.setIpfsReference),checkNftOwnershipMiddleware,checkNFTCapsuleMiddleware, setIpfsReference);
+
+capsuleRouter.get("/api/capsule/items/:nftId",validationMiddleware(getCapsuleItemsSchema), CapsuleItems);
+capsuleRouter.get("/api/capsule/metadata/:nftId",validationMiddleware(getCapsuleItemsSchema), getCapsuleMetadata);
+
 
 export default capsuleRouter;
