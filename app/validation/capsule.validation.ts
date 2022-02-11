@@ -2,8 +2,10 @@ import Joi from "joi";
 
 
 export const capsuleItemEncryptSchema: Joi.ObjectSchema = Joi.object({
-    files:{
+    body:{
         nftId:Joi.string().required(),
+    },
+    files:{
         file:Joi.object().required()
     },
 })
@@ -59,7 +61,7 @@ export const getCapsuleItemsSchema: Joi.ObjectSchema = Joi.object({
 
 export const addFileToCapsuleschema: Joi.ObjectSchema = Joi.object({
     files:{
-        capsuleFile:Joi.object().required()
+        file:Joi.object().required()
     },
     body:{
         title:Joi.string().required(),

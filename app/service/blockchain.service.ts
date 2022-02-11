@@ -199,23 +199,23 @@ const defaultExtrinsicCallback = ({ events = [], status, dispatchError }: { even
                 case sectionMethodSuccess:
                     if (!txBatch) {
                         //console.log('resolving', sectMethStr, data);
-                        resolve({ event: sectMethStr, data });
+                        resolve({ event: sectMethStr, data:{...data, block:status.asInBlock} });
                     }
                     if (onSuccessEvent && typeof onSuccessEvent === 'function') {
-                        onSuccessEvent(data, sender);
+                        onSuccessEvent({...data, block:status.asInBlock}, sender);
                     }
                     break;
                 case sectionMethodError:
-                    reject({ event: sectMethStr, data , errorDetails});
+                    reject({ event: sectMethStr, data:{...data, block:status.asInBlock}, errorDetails});
                     break;
                 case defaultBatchSectMethSuccess:
                     if (txBatch) {
-                        resolve({ event: sectMethStr, data });
+                        resolve({ event: sectMethStr, data:{...data, block:status.asInBlock} });
                     }
                     break;
                 case defaultBatchSectMethError:
                     if (txBatch) {
-                        reject({ event: sectMethStr, data, errorDetails });
+                        reject({ event: sectMethStr, data:{...data, block:status.asInBlock}, errorDetails });
                     }
                     break;
             }

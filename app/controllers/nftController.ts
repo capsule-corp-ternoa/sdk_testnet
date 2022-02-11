@@ -76,6 +76,25 @@ export const getNftDataFromIndexer = async (req: Request, res: Response) => {
 };
 
 export const getNftIdBySeries = async (req: Request, res: Response) => {
+  const { seriesId } = req.params;
+    try {
+      const nftIndexerData = await getNftIdsBySeries(seriesId, null);
+      res.status(200).json(
+        {
+          Message:`Nft ids against Series Id: ${seriesId}`,
+          Data:nftIndexerData
+        });
+
+    }
+    catch (err) {
+      res.status(500).json({ 
+        message: 'Unable to Fetch Nft Ids', 
+        details:err && (err as any).message?(err as any).message:err
+      });
+    }
+};
+
+export const getNftIdBySeriesForOwner = async (req: Request, res: Response) => {
   const { seriesId, ownerAddress } = req.params;
     try {
       const nftIndexerData = await getNftIdsBySeries(seriesId,ownerAddress);
@@ -93,6 +112,7 @@ export const getNftIdBySeries = async (req: Request, res: Response) => {
       });
     }
 };
+
 
 export const getNftIdBySeriesId = async (req: Request, res: Response) => {
   const { seriesId} = req.params;
@@ -124,7 +144,7 @@ export const getNFTsByOwner = async (req: Request, res: Response) => {
     }
     res.status(200).json(
       {
-        Message:`Nft Ids against the Owner Address: ${address}`,
+        Message:`Nft Ids for the Owner Address: ${address}`,
         NftIds:nftIds
       }
     );

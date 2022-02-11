@@ -44,11 +44,11 @@ nftTransferEntities(
 }
 `;
 
-const nftIdsBySeriesGql = (series:any,user:any) => gql `
+const nftIdsBySeriesGql = (series:any,owner:any) => gql `
 {
     nftEntities(filter: { 
     and : [
-    { owner: { equalTo: "${user}" } }
+    ${owner ? `{ owner: { equalTo: "${owner}" } }` : ""}
     {serieId:{equalTo:"${series}"}}
     {timestampBurn:{isNull:true}}
     ]
@@ -149,7 +149,7 @@ export const getNftById = (id:any) => mapResponseField(requestIndexer(nftByIdGql
 
 export const getNftsByOwner = (id:any) => mapResponseField(requestIndexer(nftByOwnerGql(id)),'nftEntities')
 
-export const getNftIdsBySeries = (series:any,user:any) => mapResponseField(requestIndexer(nftIdsBySeriesGql(series,user)),'nftEntities')
+export const getNftIdsBySeries = (series:any,owner:any = null) => mapResponseField(requestIndexer(nftIdsBySeriesGql(series,owner)),'nftEntities')
 
 export const getNftsByIds = (ids:number[]) => mapResponseField(requestIndexer(nftsByIdsGql(ids)),'nftEntities')
 

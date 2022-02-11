@@ -8,6 +8,6 @@ export const mnemonicGenerateSchema: Joi.ObjectSchema = Joi.object({
 export const transferCapsSchema: Joi.ObjectSchema = Joi.object({
     body: {
         recieverAddress:Joi.string().required(),
-        value:Joi.string().required()
+        value:Joi.number().required()
     }
 })

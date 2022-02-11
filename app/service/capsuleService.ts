@@ -94,12 +94,19 @@ export const cryptAndUploadCapsule= async (capsule:string,publicPGP:string) => {
     })
 }
 
-export const generateAndUploadCapsuleJson = (capsuleCryptedMedias:any) => {
-  const data={
-   capsuleCryptedMedias:capsuleCryptedMedias
-  }
-  const capsuleJsonFile = contentToStream(JSON.stringify(data), `capsule_${uuid()}.json`)
-  return uploadIPFS(capsuleJsonFile);
+export const generateAndUploadCapsuleJson =async (capsuleCryptedMedias:any) => {
+    try{
+        const data={
+            capsuleCryptedMedias:capsuleCryptedMedias
+           }
+           const capsuleJsonFile = contentToStream(JSON.stringify(data), `./tmp/capsule_${uuid()}.json`)
+           const uploadRes = await uploadIPFS(capsuleJsonFile);
+           return uploadRes
+    }catch(err){
+        throw err
+    }
+ 
+
 }
 
 export const removeCapsuleItem=async(nftId:any,fileIpfs:string)=>{
@@ -113,7 +120,7 @@ export const removeCapsuleItem=async(nftId:any,fileIpfs:string)=>{
         data={
             capsuleCryptedMedias:result
         }
-        const capsuleJsonFile = contentToStream(JSON.stringify(data), `capsule_${uuid()}.json`)
+        const capsuleJsonFile = contentToStream(JSON.stringify(data), `./tmp/capsule_${uuid()}.json`)
         return uploadIPFS(capsuleJsonFile);
     }
     else
@@ -152,7 +159,7 @@ export const addFileToCapsule = async (title:string, ipfs:string,mediaType:strin
             capsuleCryptedMedias:JsonArray
         }
     } 
-    const capsuleJsonFile = contentToStream(JSON.stringify(data), `capsule_${uuid()}.json`)
+    const capsuleJsonFile = contentToStream(JSON.stringify(data), `./tmp/capsule_${uuid()}.json`)
     return uploadIPFS(capsuleJsonFile);
 }
 

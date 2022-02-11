@@ -104,7 +104,7 @@ export const capsuleItemEncrypt = async (req: Request, res: Response) => {
       const {mediaType, IPFSHash, size, url}: any = await cryptAndUploadCapsule(secretFileStream, nftPublicKey);
       res.status(200).json({
         Message:`File Encrypted for Capsule Media for ${nftId}.`,
-        Data:{url, ipfs:IPFSHash, mediaType,size, publicPgpLink}
+        Data:{url, ipfs:IPFSHash, mediaType,size, publicPgpHash:publicPgpLink}
       });
     } catch (err) {
         res.status(500).json({ 
@@ -132,7 +132,7 @@ export const uploadCapsuleJson = async (req: Request, res: Response) => {
 
 export const addFileToCapsule = async (req: Request, res: Response) => {
   const nftId = req.body.nftId as any;
-  const capsuleFile = req.files?.capsuleFile as UploadedFile;
+  const capsuleFile = req.files?.file as UploadedFile;
   const {title}= req.body;
   const seed = getSeedFromRequest(req);
   const fileName = `enc_${uuid()}_${capsuleFile.name}`;

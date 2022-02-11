@@ -23,8 +23,8 @@ const capsuleRouter = Router();
 
 capsuleRouter.post("/api/capsule/media/encrypt-item",validationMiddleware(capsuleItemEncryptSchema), capsuleItemEncrypt);
 capsuleRouter.post("/api/capsule/media/upload-json",validationMiddleware(uploadCapsuleJsonSchema), validateUploadCapsuleJsonMiddleware,uploadCapsuleJson);
-capsuleRouter.post("/api/capsule/file/add",validationMiddleware(addFileToCapsuleschema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.setIpfsReference),checkNftOwnershipMiddleware,checkNFTCapsuleMiddleware,addFileToCapsule);
-capsuleRouter.post("/api/capsule/file/remove", validationMiddleware(removeFileFromCapsuleSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.setIpfsReference),checkNFTCapsuleMiddleware,checkNftOwnershipMiddleware, removeFileFromCapsule);
+capsuleRouter.post("/api/capsule/media/add",validationMiddleware(addFileToCapsuleschema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.setIpfsReference),checkNftOwnershipMiddleware,checkNFTCapsuleMiddleware,addFileToCapsule);
+capsuleRouter.post("/api/capsule/media/remove", validationMiddleware(removeFileFromCapsuleSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.setIpfsReference),checkNFTCapsuleMiddleware,checkNftOwnershipMiddleware, removeFileFromCapsule);
 capsuleRouter.post("/api/capsule/convert-from-nft", validationMiddleware(nftToCapsuleSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.createFromNft),checkNFTNotCapsuleMiddleware,checkNftOwnershipMiddleware, nftToCapsule);
 capsuleRouter.post("/api/capsule/convert-to-nft",validationMiddleware(capsuleRemoveSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.capsules, txActions.remove),checkNFTCapsuleMiddleware,checkNftOwnershipMiddleware,CapsuleToNft);
 capsuleRouter.post("/api/capsule/create",validationMiddleware(capsuleCreateSchema), balanceCheckMiddleware(txPallets.capsules, txActions.create),createCapsule);
