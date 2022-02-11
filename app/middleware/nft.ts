@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { getSeedFromRequest } from "../helpers";
 import { UploadedFile } from 'express-fileupload';
 import * as fs from 'fs';
-import { getUserFromSeed } from "../service/blockchain.service";
+import { getApi, getUserFromSeed } from "../service/blockchain.service";
 import { isNftOwner, isNftCapsule, checkNftOwnerEqualTo, checkIsNftCapsule } from "../service/nftService";
 export const checkNftOwnershipMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     let isOwner;
@@ -58,8 +58,8 @@ export const checkNftNotBurntMiddleware = async (req: Request, res: Response, ne
     }
 }
 export const checkNFTNotListedMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    const isListed = req.body.nft.listed !== 1;
-    if (!isListed) {
+    const isNotListed = req.body.nft.listed === 0;
+    if (isNotListed) {
         next()
     } else {
         res.status(403).send('Forbidden: This NFT is listed!');
@@ -102,4 +102,30 @@ export const CheckPreviewFile=async (req: Request, res: Response, next: NextFunc
     {
         next()
     }
+}
+
+export const checkSerieLockedMiddleWare=async (req: Request, res: Response, next: NextFunction)=>{ 
+    const {seriesId}=req.body;
+    if(seriesId){
+        const SeriesData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.series(seriesId)));
+        if(SeriesData)
+        {
+            if(SeriesData.draft===true){next()}
+            else{res.status(403).send("Forbidden!! Serie is Locked!");}
+        }
+        else{next()}
+    }
+    else{next()}
+}
+
+export const checkSerieinDraftMiddleWare=async (req: Request, res: Response, next: NextFunction)=>{ 
+    const {nftId}=req.body;
+    const nftData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.data(nftId)));
+    const SeriesData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.series(nftData.series_id)));
+    if(SeriesData)
+    {
+        if(SeriesData.draft===true){res.status(403).send(`Forbidden!! Series is in Draft! Lock NFT Series "${nftData.series_id}" to continue Operation!`)}
+        else{next()}
+    }
+    else{res.status(403).send("Forbidden!! SeriesId Not valid or not available!")}
 }

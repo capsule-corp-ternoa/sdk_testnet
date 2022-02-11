@@ -1,40 +1,17 @@
 
 import {
   mnemonicGenerate,
+  TransferCapsandKeepAlive
 } from "../controllers/userController"
 import { Router } from 'express'
 import { validationMiddleware } from "../validation";
-import { mnemonicGenerateSchema } from "../validation/user.validation";
+import { mnemonicGenerateSchema,transferCapsSchema } from "../validation/user.validation";
+import { balanceCheckMiddleware } from "../middleware/balance";
+import { txPallets, txActions } from "../const/tx.const";
 
 const userRouter = Router();
-/*
-  Upload images to IPFS server
-  */
-/*
-Generate mnemonic and public address
-*/
-userRouter.get("/api/mnemonicGenerate",validationMiddleware(mnemonicGenerateSchema), mnemonicGenerate);
 
-// /*
-// Upload JSON file to IPFS 
-// */
-
-// /*
-// Send signature to Server
-// */
-
-
-
-
-/*
-get NFT data by id
-*/
-
-
-
-
-
-
-// app.post("/api/nftMint",controller.NftMint);
+userRouter.get("/api/user/generate-mnemonic",validationMiddleware(mnemonicGenerateSchema), mnemonicGenerate);
+userRouter.post("/api/user/balances/transfer-keep-alive",validationMiddleware(transferCapsSchema),balanceCheckMiddleware(txPallets.balances,txActions.transferKeepAlive), TransferCapsandKeepAlive);
 
 export default userRouter;

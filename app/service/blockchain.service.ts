@@ -87,6 +87,12 @@ export const getNFTMintPrice = async () => {
     return balance
 }
 
+export const getMarketplaceMintPrice = async () => {
+    const MarketplaceMintPrice = await (await getApi()).query.marketplace.marketplaceMintFee();
+    balance = (Number(unFormatBalance(MarketplaceMintPrice)) / Math.pow(10, 18))
+    return balance
+}
+
 export const getMPMintPrice = async () => {
     const mpMintPrice = await (await getApi()).query.marketplace.marketplaceMintFee();
     balance = (Number(unFormatBalance(mpMintPrice)) / Math.pow(10, 18))
@@ -114,9 +120,14 @@ export const safeDisconnect = () => {
 export const formatChainData = (data: any) => JSON.parse(JSON.stringify(data));
 
 export const getUserFromSeed = async (seed: string) => {
-    const keyring = new Keyring({ type: 'sr25519' })
-    await cryptoWaitReady();
-    return keyring.createFromUri(seed);
+    try{
+        const keyring = new Keyring({ type: 'sr25519' })
+        await cryptoWaitReady();
+        return keyring.createFromUri(seed);
+    }catch(err){
+        console.log('getUserFromSeed: err:', err)
+        throw new Error("invalid seed")
+    }
 }
 
 export const getSignature = (sender: any, data: any) => u8aToHex(sender.sign(data));
@@ -156,8 +167,23 @@ const getTransaction = async (txPallet: txPallets, txAction: txActions, txArgs: 
     }
 };
 
-const defaultExtrinsicCallback = ({ events = [], status }: { events: any[], status: any }, sectionMethodSuccess: string, sectionMethodError: string, txArgs: any[], txBatch: boolean, sender: KeyringPair, onSuccessEvent: Function | undefined, resolve: Function, reject: Function) => {
+const getErrorDetails = (dispatchError:any) => {
+    if (dispatchError.isModule) {
+      // for module errors, we have the section indexed, lookup
+      if(api)
+      return api.registry.findMetaError(dispatchError.asModule);
+      else
+      return 'blockchain connection failed!'
+    } else {
+      // Other, CannotLookup, BadOrigin, no extra info
+      return dispatchError.toString();
+    }
+  };
+
+const defaultExtrinsicCallback = ({ events = [], status, dispatchError }: { events: any[], status: any, dispatchError:any }, sectionMethodSuccess: string, sectionMethodError: string, txArgs: any[], txBatch: boolean, sender: KeyringPair, onSuccessEvent: Function | undefined, resolve: Function, reject: Function) => {
     // //console.info('defaultExtrinsicCallback', sectionMethodSuccess, sectionMethodError, txArgs, sender, onSuccessEvent);
+    const errorDetails = dispatchError ? getErrorDetails(dispatchError) : null;
+    // console.log('defaultExtrinsicCallback: errorDetails:', errorDetails)
     if (status.isRetracted) {
         const retractedStr = `Transaction isRetracted ${status.asRetracted}`;
         //console.warn(retractedStr);
@@ -173,23 +199,23 @@ const defaultExtrinsicCallback = ({ events = [], status }: { events: any[], stat
                 case sectionMethodSuccess:
                     if (!txBatch) {
                         //console.log('resolving', sectMethStr, data);
-                        resolve({ event: sectMethStr, data });
+                        resolve({ event: sectMethStr, data:{...data, block:status.asInBlock} });
                     }
                     if (onSuccessEvent && typeof onSuccessEvent === 'function') {
-                        onSuccessEvent(data, sender);
+                        onSuccessEvent({...data, block:status.asInBlock}, sender);
                     }
                     break;
                 case sectionMethodError:
-                    reject({ event: sectMethStr, data });
+                    reject({ event: sectMethStr, data:{...data, block:status.asInBlock}, errorDetails});
                     break;
                 case defaultBatchSectMethSuccess:
                     if (txBatch) {
-                        resolve({ event: sectMethStr, data });
+                        resolve({ event: sectMethStr, data:{...data, block:status.asInBlock} });
                     }
                     break;
                 case defaultBatchSectMethError:
                     if (txBatch) {
-                        reject({ event: sectMethStr, data });
+                        reject({ event: sectMethStr, data:{...data, block:status.asInBlock}, errorDetails });
                     }
                     break;
             }
@@ -225,13 +251,21 @@ export const runTransaction = async (
         txBatch = true;
     }
     const transaction = await getTransaction(txPallet, txAction, txArgs, txBatch, extraTransactions);
-    let unsubscribe;
+    let unsubscribe:object;
     const transactionCallbackPromise = new Promise(async (resolve, reject) => {
         unsubscribe = await transaction
             .signAndSend(sender, (response: any) => transactionCallback(response, sectionMethodSuccess, sectionMethodError, txArgs, txBatch, sender, onSuccessEvent, resolve, reject))
             .catch(reject);
     });
-    transactionCallbackPromise.then(unsubscribe).catch(unsubscribe);
+    transactionCallbackPromise.then(async()=>{
+        if (unsubscribe && typeof unsubscribe === 'function') {
+            await unsubscribe();
+        }
+    }).catch(async()=>{
+        if (unsubscribe && typeof unsubscribe === 'function') {
+            await unsubscribe();
+        }
+    });
     return transactionCallbackPromise;
 };
 
@@ -266,6 +300,12 @@ export const BalanceCheck = async (addressOrSeed: string, pallet: string, action
                     const nftMintFee = await getNFTMintPrice();
                     return (userBalance > nftMintFee + extrinsicsFee)
             }
+        case txPallets.marketplace:
+            switch(action){
+                case txActions.create:
+                    const mpMintPrice=await getMarketplaceMintPrice();
+                    return (userBalance > mpMintPrice + extrinsicsFee)
+            }        
         case txPallets.capsules:
             switch (action) {
                 case txActions.createFromNft:

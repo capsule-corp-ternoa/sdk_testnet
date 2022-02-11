@@ -24,14 +24,31 @@ const nftByIdGql = (id:number) => gql `
         marketplaceId,
         isCapsule,
 }
+nftTransferEntities(
+  orderBy: [TIMESTAMP_DESC]
+  first:1
+  filter: { 
+            and : [
+              {nftId:{equalTo:"${id}"}}
+              {typeOfTransaction:{equalTo: "transfer"}}
+            ]
+          } 
+) {
+  nodes {
+    from
+    to
+    typeOfTransaction
+    timestamp
+  }
+}
 }
 `;
 
-const nftIdsBySeriesGql = (series:any,user:any) => gql `
+const nftIdsBySeriesGql = (series:any,owner:any) => gql `
 {
     nftEntities(filter: { 
     and : [
-    { owner: { equalTo: "${user}" } }
+    ${owner ? `{ owner: { equalTo: "${owner}" } }` : ""}
     {serieId:{equalTo:"${series}"}}
     {timestampBurn:{isNull:true}}
     ]
@@ -85,6 +102,38 @@ const nftsByIdsGql = (ids:number[]) => gql `
 }
 `;
 
+const mpByIdGql = (id:number) => gql `
+{
+    marketplaceEntity(id: "${id}"){
+        name,
+        id,
+        owner,
+        kind,
+        uri,
+}
+}
+`;
+
+const mpByOwnerGql = (owner:any) => gql `
+{
+    marketplaceEntities(filter: { 
+    and : [
+    { owner: { equalTo: "${owner}" } }
+    ]
+  } 
+      orderBy:CREATED_AT_ASC ){
+      nodes{
+        name,
+        id,
+        owner,
+        kind,
+        uri,
+      }
+    totalCount
+    }
+  }
+`;
+
 const mapResponseField = (requestPromise:any, responseField:any) => new Promise(async (resolve, reject) => {
     try {
         const response = await requestPromise.catch(reject);
@@ -94,10 +143,17 @@ const mapResponseField = (requestPromise:any, responseField:any) => new Promise(
     }
 })
 
+export const getNftByIdWithLastOwner = async (id:any) => await requestIndexer(nftByIdGql(id))
+
 export const getNftById = (id:any) => mapResponseField(requestIndexer(nftByIdGql(id)),'nftEntity')
 
 export const getNftsByOwner = (id:any) => mapResponseField(requestIndexer(nftByOwnerGql(id)),'nftEntities')
 
-export const getNftIdsBySeries = (series:any,user:any) => mapResponseField(requestIndexer(nftIdsBySeriesGql(series,user)),'nftEntities')
+export const getNftIdsBySeries = (series:any,owner:any = null) => mapResponseField(requestIndexer(nftIdsBySeriesGql(series,owner)),'nftEntities')
 
 export const getNftsByIds = (ids:number[]) => mapResponseField(requestIndexer(nftsByIdsGql(ids)),'nftEntities')
+
+export const getMpById = (id:any) => mapResponseField(requestIndexer(mpByIdGql(id)),'marketplaceEntity')
+
+export const getMpByOwner = (owner:any) => mapResponseField(requestIndexer(mpByOwnerGql(owner)),'marketplaceEntities')
+

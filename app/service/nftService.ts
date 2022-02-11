@@ -133,7 +133,8 @@ export const createNft = async (nftIpfs: string, seriesId: string, user: any) =>
         return nftId;
     }
     catch(err){
-        return err
+        console.log('createNft err:::', err)
+        throw err
     }
 };
 
@@ -142,7 +143,6 @@ export const burnNftsBatchService =async (nftIds: any, user: any) => {
     try{
         const nftTransactions = await Promise.all(nftIds.map((nftId: string) => burnNftTransaction(nftId)));
         const { event, data } = await runTransaction(txPallets.utility, txActions.batch, user, [nftTransactions], false, txEvent.nftsBurned)
-        console.log('burnNftsBatchService : data', data);
         const nft_Id =  data[0].toString();
         return nft_Id;
     }
@@ -217,51 +217,39 @@ export const isNftCapsule = async (nftId: any) => {
 export const checkIsNftCapsule = (nftData:any)=> nftData.isCapsule === true;
 
 export const listNft = async (nftId: number, seed: string, price: number, mpId: number): Promise<any> => {
-    try{
-        const sender = await getUserFromSeed(seed);
-        return runTransaction(txPallets.marketplace, txActions.list, sender, [nftId, getChainPrice(price), mpId], false, 'marketplace.NftListed')
-    }
-    catch (err)
-    {
-        return err
-    }
+    const sender = await getUserFromSeed(seed);
+    return runTransaction(txPallets.marketplace, txActions.list, sender, [nftId, getChainPrice(price), mpId], false, 'marketplace.NftListed')
 };
 export const lockNftSerie = async (seriesId: string, seed: string): Promise<any> => {
-    try{
-        const sender = await getUserFromSeed(seed);
-        return runTransaction(txPallets.nfts, txActions.finishSeries, sender, [seriesId], false)
-    }
-    catch (err)
-    {
-        return err
-    }
+    const sender = await getUserFromSeed(seed);
+    return runTransaction(txPallets.nfts, txActions.finishSeries, sender, [seriesId], false)
 };
 export const unlistNft = async (nftId: number, seed: string): Promise<any> => {
-    try{
-        const sender = await getUserFromSeed(seed);
-        return runTransaction(txPallets.marketplace, txActions.unlist, sender, [nftId], false, 'marketplace.NftUnlisted')
-    }
-    catch (err)
-    {
-        return err
-    }
+    const sender = await getUserFromSeed(seed);
+    return runTransaction(txPallets.marketplace, txActions.unlist, sender, [nftId], false, 'marketplace.NftUnlisted')
 };
 
 export const encryptAndUploadService=async(fileName:any)=>{
-    const secretFileStream: any = getFileStreamFromName(fileName);
-    const pgp = await generatePgp();
-    const [{ url: encryptedMedia, IPFSHash: encryptedMediaIPFSHash, size: encryptedMediaSize, mediaType: encryptedMediaType }, { url: publicPgpLink, IPFSHash: publicPgpIPFSHash }]: any = await cryptAndUploadNFT(secretFileStream, pgp.publicKey);
-    const privateKeyFilePath = localKeysFolder + publicPgpIPFSHash
-    fs.writeFileSync(privateKeyFilePath, pgp.privateKey);
-    return {
-        encryptedMedia,
-        publicPgpLink,
-        encryptedMediaIPFSHash,
-        encryptedMediaType,
-        encryptedMediaSize,
-        publicPgpIPFSHash,
-        privateKeyFilePath,
-    };
+    try{
+        const secretFileStream: any = getFileStreamFromName(fileName);
+        const pgp = await generatePgp();
+        const [{ url: encryptedMedia, IPFSHash: encryptedMediaIPFSHash, size: encryptedMediaSize, mediaType: encryptedMediaType }, { url: publicPgpLink, IPFSHash: publicPgpIPFSHash }]: any = await cryptAndUploadNFT(secretFileStream, pgp.publicKey);
+        const privateKeyFilePath = localKeysFolder + publicPgpIPFSHash
+        fs.writeFileSync(privateKeyFilePath, pgp.privateKey);
+        return {
+            encryptedMedia,
+            publicPgpLink,
+            encryptedMediaIPFSHash,
+            encryptedMediaType,
+            encryptedMediaSize,
+            publicPgpIPFSHash,
+            privateKeyFilePath,
+        };
+    }catch (err){
+        console.log('encryptAndUploadService err', err);
+        throw err
+    }
+    
 }
 
 export const ProcessPreviewFiles =async (file:UploadedFile)=>{
@@ -307,4 +295,9 @@ export const decryptNftOrCapsule = async (nftId: number, seed: string): Promise<
     const result = await openpgp.decrypt({ message: pgpMsg, decryptionKeys: pgpPrivateKey });
     const {  data: base64Data } = result;
     return `data:${contentType};base64,${base64Data}`;
+};
+
+export const nftTransferService=async(nftId:any,recieverAddress:any,seed:any) => {
+    const sender = await getUserFromSeed(seed);
+    return runTransaction(txPallets.nfts, txActions.transfer, sender, [nftId ,recieverAddress ], false, txEvent.nftsTransfered)
 };

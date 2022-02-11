@@ -20,7 +20,6 @@ export const setCapsuleIpfsReferenceService=async(nftId:number,ipfs:string,seed:
 
 export const getCapsuleItems = async (nftId:any) => {
         const capsuleMetadata=await capsuleMetaData(nftId);
-        console.log('capsuleMetadata',capsuleMetadata)
         const url=`${process.env.IPFS_GATEWAY_BASE_URL}/ipfs/${capsuleMetadata.ipfs_reference}`;
         const res= await axios.get(url)
         if (res && res.data){
@@ -82,17 +81,11 @@ export const cryptAndUploadCapsule= async (capsule:string,publicPGP:string) => {
         try{
             const encryptedCapsule = await cryptFilePgp(capsule, publicPGP);     
             const secretFileName = getStreamFilename(capsule);
-            const pgpPath = `./tmp/pgp-public-key_${uuid()}.txt`;
-            const pgpFile = contentToStream(publicPGP, pgpPath);
             const encryptedPath = `./tmp/${uuid()}_${secretFileName}`;
             const encryptedFile = contentToStream(encryptedCapsule, encryptedPath);
-            const [encryptedUploadResponse, pgpUploadResponse] = await Promise.all([
-                uploadIPFS(encryptedFile),
-                uploadIPFS(pgpFile),
-            ])
+            const encryptedUploadResponse = await uploadIPFS(encryptedFile)
             deleteFile(encryptedPath)
-            deleteFile(pgpPath)
-            resolve([encryptedUploadResponse, pgpUploadResponse]) 
+            resolve(encryptedUploadResponse) 
         }
         catch (err) 
         {
@@ -101,20 +94,19 @@ export const cryptAndUploadCapsule= async (capsule:string,publicPGP:string) => {
     })
 }
 
-export const generateAndUploadCapsuleJson = (title:string, ipfs:string,mediaType:string,size:number) => {
-  const data={
-   capsuleCryptedMedias:
-    [
-       {
-           title,
-           ipfs,
-           mediaType,
-           size
-       }
-    ] 
-  }
-  const capsuleJsonFile = contentToStream(JSON.stringify(data), `capsule_${uuid()}.json`)
-  return uploadIPFS(capsuleJsonFile);
+export const generateAndUploadCapsuleJson =async (capsuleCryptedMedias:any) => {
+    try{
+        const data={
+            capsuleCryptedMedias:capsuleCryptedMedias
+           }
+           const capsuleJsonFile = contentToStream(JSON.stringify(data), `./tmp/capsule_${uuid()}.json`)
+           const uploadRes = await uploadIPFS(capsuleJsonFile);
+           return uploadRes
+    }catch(err){
+        throw err
+    }
+ 
+
 }
 
 export const removeCapsuleItem=async(nftId:any,fileIpfs:string)=>{
@@ -128,7 +120,7 @@ export const removeCapsuleItem=async(nftId:any,fileIpfs:string)=>{
         data={
             capsuleCryptedMedias:result
         }
-        const capsuleJsonFile = contentToStream(JSON.stringify(data), `capsule_${uuid()}.json`)
+        const capsuleJsonFile = contentToStream(JSON.stringify(data), `./tmp/capsule_${uuid()}.json`)
         return uploadIPFS(capsuleJsonFile);
     }
     else
@@ -167,7 +159,7 @@ export const addFileToCapsule = async (title:string, ipfs:string,mediaType:strin
             capsuleCryptedMedias:JsonArray
         }
     } 
-    const capsuleJsonFile = contentToStream(JSON.stringify(data), `capsule_${uuid()}.json`)
+    const capsuleJsonFile = contentToStream(JSON.stringify(data), `./tmp/capsule_${uuid()}.json`)
     return uploadIPFS(capsuleJsonFile);
 }
 

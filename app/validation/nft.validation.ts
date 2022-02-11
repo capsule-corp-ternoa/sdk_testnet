@@ -2,13 +2,10 @@ import Joi from "joi";
 
 
 export const nftBurnSchema: Joi.ObjectSchema = Joi.object({
-    params:{
-        nftId:Joi.string().required()
-    },
     body:{
+        nftId:Joi.string().required(),
         seed:Joi.string()
     }
-    
 })
 export const nftMintSchema: Joi.ObjectSchema = Joi.object({
     body:{
@@ -20,10 +17,8 @@ export const nftMintSchema: Joi.ObjectSchema = Joi.object({
     
 })
 export const unlistNftSchema: Joi.ObjectSchema = Joi.object({
-    params: {
-        id: Joi.number().required(),
-    },
     body: {
+        nftId: Joi.number().required(),
         seed: Joi.string().optional(),
     }
 
@@ -77,18 +72,22 @@ export const encryptAndUploadMediaSchema:Joi.ObjectSchema= Joi.object({
 });
 
 export const decryptNftSchema : Joi.ObjectSchema = Joi.object({
-    params: {
-        id: Joi.number().required(),
-    },
     body: {
+        nftId: Joi.number().required(),
         seed: Joi.string().optional(),
     }
 });
 
-export const getNftIdBySeriesSchema:Joi.ObjectSchema = Joi.object({
-    body:{
+export const getNftIdBySeriesForOwnerSchema:Joi.ObjectSchema = Joi.object({
+    params:{
         seriesId:Joi.string().required(),
-        seed: Joi.string().optional()
+        address: Joi.string().required()
+    }
+});
+
+export const getNftIdBySeriesSchema:Joi.ObjectSchema = Joi.object({
+    params:{
+        seriesId:Joi.string().required()
     }
 });
 export const serieLockSchema: Joi.ObjectSchema = Joi.object({
@@ -107,6 +106,14 @@ export const nftSaleSchema: Joi.ObjectSchema = Joi.object({
 });
 export const getNftDataByOwnerScehma:Joi.ObjectSchema=Joi.object({
     params: {
-        ownerAddress: Joi.string().required(),
+        address: Joi.string().required(),
+    }
+})
+
+export const nftTransferScehma:Joi.ObjectSchema=Joi.object({
+    body: {
+        nftId: Joi.string().required(),
+        recieverAddress:Joi.string().required(),
+        seed: Joi.string().optional()
     }
 })

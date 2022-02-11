@@ -45,7 +45,7 @@ export const setIpfsReference = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to update Capsule Ipfs Reference on blockchain.', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 }
@@ -62,7 +62,7 @@ export const CapsuleItems = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to Fetch Capsule Items.', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 }
@@ -81,17 +81,16 @@ export const getCapsuleMetadata = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to Fetch Capsule Data', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 }
 
 export const capsuleItemEncrypt = async (req: Request, res: Response) => {
   const file = req.files?.file as UploadedFile;
-  const nftId = req.params.nftId as any;
+  const nftId = req.body.nftId as any;
   const fileName = `enc_${uuid()}_${file.name}`;
   const destPath = getFilePath(fileName);
-  const fileSizeInBytes = file.size
   file.mv(destPath, async function (err) {
     if (err) {
       throw err;
@@ -102,41 +101,38 @@ export const capsuleItemEncrypt = async (req: Request, res: Response) => {
       const publicPgpLink = nftIpfsdata.properties.publicPGP
       const nftPublicKey = await getNftPublicKey(publicPgpLink);
       const secretFileStream: any = getFileStreamFromName(fileName);
-      const [{ url: encryptedMedia, mediaType: encryptedMediaType }]: any = await cryptAndUploadCapsule(secretFileStream, nftPublicKey);
+      const {mediaType, IPFSHash, size, url}: any = await cryptAndUploadCapsule(secretFileStream, nftPublicKey);
       res.status(200).json({
         Message:`File Encrypted for Capsule Media for ${nftId}.`,
-        Data:{encryptedMedia,
-        encryptedMediaType,
-        publicPgpLink,
-        size: fileSizeInBytes}
+        Data:{url, ipfs:IPFSHash, mediaType,size, publicPgpHash:publicPgpLink}
       });
     } catch (err) {
         res.status(500).json({ 
           message: 'Unable to Encrypt or Upload a file on Ipfs.', 
-          details:err
+          details:err && (err as any).message?(err as any).message:err
         });
     }
   });
 };
 
 export const uploadCapsuleJson = async (req: Request, res: Response) => {
-  const { title, ipfs, mediaType, size } = req.body;
+  const { capsuleCryptedMedias } = req.body;
   try {
-    const { url, IPFSHash } = await generateAndUploadCapsuleJson(title, ipfs, mediaType, size);
+    const { url, IPFSHash } = await generateAndUploadCapsuleJson(capsuleCryptedMedias);
     res.status(200).json({
-        Message:`Json Updated.`,
-        Data:{ url, IPFSHash }});
+        Message:`Json Uploaded.`,
+        Data:{ url, ipfs:IPFSHash }});
   } catch (err) {
       res.status(500).json({ 
         message: 'Unable to Upload Capsule Json on Ipfs', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 };
 
 export const addFileToCapsule = async (req: Request, res: Response) => {
-  const nftId = req.params.nftId as any;
-  const capsuleFile = req.files?.capsuleFile as UploadedFile;
+  const nftId = req.body.nftId as any;
+  const capsuleFile = req.files?.file as UploadedFile;
   const {title}= req.body;
   const seed = getSeedFromRequest(req);
   const fileName = `enc_${uuid()}_${capsuleFile.name}`;
@@ -151,8 +147,8 @@ export const addFileToCapsule = async (req: Request, res: Response) => {
       const publicPgpLink = nftIpfsdata.properties.publicPGP
       const nftPublicKey = await getNftPublicKey(publicPgpLink);
       const secretFileStream: any = getFileStreamFromName(fileName);
-      const [{ url: encryptedMedia, IPFSHash: encryptedMediaIPFSHash, size: encryptedMediaSize, mediaType: encryptedMediaType }]: any
-      = await cryptAndUploadCapsule(secretFileStream, nftPublicKey);
+      const cryptAndUploadRes: any= await cryptAndUploadCapsule(secretFileStream, nftPublicKey);
+      const { IPFSHash: encryptedMediaIPFSHash, size: encryptedMediaSize, mediaType: encryptedMediaType } = cryptAndUploadRes;
       const newIpfs = await addCapsuleItem(title, encryptedMediaIPFSHash, encryptedMediaType, encryptedMediaSize, nftId) as any;
       if(newIpfs)
       {
@@ -169,7 +165,7 @@ export const addFileToCapsule = async (req: Request, res: Response) => {
     } catch (err) {
         res.status(500).json({ 
           message: 'Unable to Add File to Capsule Media', 
-          details:err
+          details:err && (err as any).message?(err as any).message:err
         });
     }
   });
@@ -187,13 +183,13 @@ export const nftToCapsule = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
       message: 'Unable to conver nft to Capsule', 
-      details:err
+      details:err && (err as any).message?(err as any).message:err
     });
   }
 }
 
 export const CapsuleToNft = async (req: Request, res: Response) => {
-  const { nftId } = req.params;
+  const { nftId } = req.body;
     const seed = getSeedFromRequest(req);;
     try {
       const sender = await getUserFromSeed(seed);
@@ -206,7 +202,7 @@ export const CapsuleToNft = async (req: Request, res: Response) => {
     catch (err) {
       res.status(500).json({ 
         message: 'Unable to Convert Capsule Back to Nft', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
     }
 }
@@ -225,14 +221,14 @@ export const createCapsule = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
       message: 'Unable to Create Capsule On blockchain!', 
-      details:err
+      details:err && (err as any).message?(err as any).message:err
     });
   }
 }
 
 export const removeFileFromCapsule = async (req: Request, res: Response) => {
   const { fileIpfs } = req.body;
-  const nftId=req.params.nftId as any;
+  const nftId=req.body.nftId as any;
   const seed = getSeedFromRequest(req);
   try {
     const sender = await getUserFromSeed(seed);
@@ -250,7 +246,7 @@ export const removeFileFromCapsule = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
       message: 'Unable to remove Capsule File from Ipfs', 
-      details:err
+      details:err && (err as any).message?(err as any).message:err
     });
   }
 }

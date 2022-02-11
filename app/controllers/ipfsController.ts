@@ -23,7 +23,7 @@ export const uploadIM = async (req:Request, res:Response) => {
     console.log('uploadIM err', err)
     res.status(500).json({ 
         message: 'Unable to Upload File to Ipfs.', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 };

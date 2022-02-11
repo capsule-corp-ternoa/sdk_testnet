@@ -19,14 +19,16 @@ import {
   lockNftSerie,
   unlistNft,
   encryptAndUploadService,
-  decryptNftOrCapsule
+  decryptNftOrCapsule,
+  nftTransferService
 } from '../service/nftService';
 
 import {
   getNftById,
   getNftsByOwner,
   getNftIdsBySeries,
-  getNftsByIds
+  getNftsByIds,
+  getNftByIdWithLastOwner
 
 } from '../service/ternoa.indexer';
 
@@ -34,7 +36,7 @@ import {
   getSgxNodes,
   saveSSSAToSGX
 } from '../service/sgxService';
-import { getUserFromSeed } from '../service/blockchain.service';
+import { getApi, getUserFromSeed } from '../service/blockchain.service';
 import { getSeedFromRequest } from '../helpers';
 import { nextTick } from 'process';
 
@@ -42,14 +44,27 @@ const localKeysFolder = process.env.LOCAL_KEYS_FOLDER || './nftKeys/';
 
 export const getNftDataFromIndexer = async (req: Request, res: Response) => {
   const { id } = req.params;
-
   try {
-    const nftIndexerData = await getNftById(id);
-    res.status(200).json(
-      {
-        Message :`Nft Data For ID: ${id}`,
-        Data:nftIndexerData
-      });
+    const nftIndexerData = await getNftByIdWithLastOwner(id);
+    if(nftIndexerData && nftIndexerData.nftEntity){
+      let Data= {...nftIndexerData.nftEntity, }
+      if(nftIndexerData && nftIndexerData.nftTransferEntities && nftIndexerData.nftTransferEntities.nodes &&nftIndexerData.nftTransferEntities.nodes[0]){
+        Data ={...Data, previousOwner:nftIndexerData.nftTransferEntities.nodes[0].from}
+      }else {
+        Data ={...Data, previousOwner:null}
+      }
+      res.status(200).json(
+        {
+          Message :`Nft Data For ID: ${id}`,
+          Data
+        });
+    }else {
+      res.status(200).json(
+        {
+          Message :`no data For ID: ${id}`,
+        });
+    }
+  
   }
   catch (err) {
     res.status(500).send(
@@ -61,11 +76,9 @@ export const getNftDataFromIndexer = async (req: Request, res: Response) => {
 };
 
 export const getNftIdBySeries = async (req: Request, res: Response) => {
-  const { seriesId } = req.body;
-  const seed = getSeedFromRequest(req);
+  const { seriesId } = req.params;
     try {
-      const sender=await getUserFromSeed(seed);
-      const nftIndexerData = await getNftIdsBySeries(seriesId,sender.address);
+      const nftIndexerData = await getNftIdsBySeries(seriesId, null);
       res.status(200).json(
         {
           Message:`Nft ids against Series Id: ${seriesId}`,
@@ -76,22 +89,62 @@ export const getNftIdBySeries = async (req: Request, res: Response) => {
     catch (err) {
       res.status(500).json({ 
         message: 'Unable to Fetch Nft Ids', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
     }
 };
 
+export const getNftIdBySeriesForOwner = async (req: Request, res: Response) => {
+  const { seriesId, ownerAddress } = req.params;
+    try {
+      const nftIndexerData = await getNftIdsBySeries(seriesId,ownerAddress);
+      res.status(200).json(
+        {
+          Message:`Nft ids against Series Id: ${seriesId}`,
+          Data:nftIndexerData
+        });
+
+    }
+    catch (err) {
+      res.status(500).json({ 
+        message: 'Unable to Fetch Nft Ids', 
+        details:err && (err as any).message?(err as any).message:err
+      });
+    }
+};
+
+
+export const getNftIdBySeriesId = async (req: Request, res: Response) => {
+  const { seriesId} = req.params;
+    try {
+    //  const nftIndexerData = await //getNftIdsBySeries(seriesId,ownerAddress);
+      res.status(200).json(
+        {
+          Message:`Nft ids against Series Id: ${seriesId}`,
+      //    Data:nftIndexerData
+        });
+
+    }
+    catch (err) {
+      res.status(500).json({ 
+        message: 'Unable to Fetch Nft Ids', 
+        details:err && (err as any).message?(err as any).message:err
+      });
+    }
+};
+
+
 export const getNFTsByOwner = async (req: Request, res: Response) => {
-  const { ownerAddress } = req.params;
+  const { address } = req.params;
   try {
-    const IndexerData = await getNftsByOwner(ownerAddress);
+    const IndexerData = await getNftsByOwner(address);
     let nftIds: Array<object> = []
     if (IndexerData && (IndexerData as any).nodes.length) {
       nftIds = (IndexerData as any).nodes.map((node: any) => (node.id))
     }
     res.status(200).json(
       {
-        Message:`Nft Ids against the Owner Address: ${ownerAddress}`,
+        Message:`Nft Ids for the Owner Address: ${address}`,
         NftIds:nftIds
       }
     );
@@ -99,7 +152,7 @@ export const getNFTsByOwner = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to Fetch Nft Ids', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 
@@ -128,7 +181,7 @@ export const encryptAndUploadMedia = async (req: Request, res: Response) => {
   {
     res.status(500).json({ 
         message: 'Unable to Encrypt and Upload file to Ipfs.', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 
@@ -149,7 +202,7 @@ export const uploadNFTJson = async (req: Request, res: Response) => {
   } catch (err) {
       res.status(500).json({ 
         message: 'Unable to Upload Nft Json to Ipfs', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 };
@@ -179,7 +232,7 @@ export const mintNFT = async (req: Request, res: Response) => {
       res.status(500).json(
         {
           message:'Error creating Nft on blockchain!',
-          details:err
+          details:err && (err as any).message?(err as any).message:err
         }
       )
     }
@@ -226,7 +279,7 @@ export const createNewNFT = async (req: Request, res: Response,next:NextFunction
     res.status(500).json(
       {
         message:'Error creating Nft on blockchain!',
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       })
   }
 }
@@ -238,16 +291,22 @@ export const burnNftBatch = async (req: Request, res: Response) => {
   const ownerAddress= signer.address
   const nftsData: any = await getNftsByIds(nftIds)
   const nftsNodes = nftsData?.nodes as any[]
-  console.log('nftsNodes length', nftsNodes.length)
-  console.log('nftsNodes', nftsNodes)
+  // console.log('nftsNodes length', nftsNodes.length)
+  // console.log('nftsNodes', nftsNodes)
   if (nftsNodes?.length === 0) {res.status(403).json('No nfts to burn'); return;}
   if (nftsNodes?.length !== nftIds.length) {res.status(403).json('Some nfts are already burnt'); return;}
-  if (nftsNodes.findIndex(x => x.isCapsule) !== -1) {res.status(403).json('Some nfts are capsules and cannot be burnt'); return;}
-  if (nftsNodes.findIndex(x => x.owner === ownerAddress) !== -1) {res.status(403).json('You do not own all nfts'); return;}
+  if (nftsNodes.findIndex(x => x.isCapsule) !== -1) {
+    res.status(403).json('Some nfts are capsules and cannot be burnt'); 
+    return;}
+  if (nftsNodes.findIndex(x => x.owner !== ownerAddress) !== -1) {
+    console.log('not owned', nftsNodes.filter(y=> y.owner !== ownerAddress))
+    res.status(403).json('You do not own all nfts'); return;
+  }
     try {
       await burnNftsBatchService(nftIds,signer)
       res.status(200).json({
-        nftId: req.body.nftIds
+        message:"nfts burned",
+        nftIds: req.body.nftIds
       })
     }
     catch (err) {
@@ -256,7 +315,7 @@ export const burnNftBatch = async (req: Request, res: Response) => {
 };
 
 export const burnNft = async (req: Request, res: Response) => {
-  const { nftId } = req.params as any;
+  const { nftId } = req.body as any;
   const capsuleCheck: any = await isCapsule(nftId);
   if (!capsuleCheck) {
     const seed = getSeedFromRequest(req)
@@ -272,7 +331,7 @@ export const burnNft = async (req: Request, res: Response) => {
        res.status(500).json(
       {
         message:'Error Burning Nft on blockchain!',
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       })
     }
   }
@@ -293,7 +352,7 @@ export const NftSale = async (req: Request, res: Response) => {
   catch (err) {
       res.status(500).json({ 
         message: 'Unable to List this Nft for sale.', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 }
@@ -307,32 +366,32 @@ export const serieLock = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
         message: 'Unable to Lock Nft Serie.', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
     });
   }
 }
 export const NftUnlist = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const nftId  = req.body.nftId;
   const seed = getSeedFromRequest(req);;
   try {
-    await unlistNft(Number(id), seed);
-    res.status(200).json({Message:`NFT ${id} was successfully unlisted`});
+    await unlistNft(Number(nftId), seed);
+    res.status(200).json({Message:`NFT ${nftId} was successfully unlisted`});
   }
   catch (err) {
     res.status(500).json({ 
         message: 'Unable to Unlist Nft from Sale.', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 }
 export const decryptNft = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { nftId } = req.body;
   const seed = getSeedFromRequest(req);;
   try {
-    const decrypted = await decryptNftOrCapsule(Number(id), seed);
+    const decrypted = await decryptNftOrCapsule(Number(nftId), seed);
     console.log('decrypted', decrypted);
     res.status(200).json({
-      Message:`Nft/Capsule Item Decrypted for Id:${id}.`,
+      Message:`Nft/Capsule Item Decrypted for Id:${nftId}.`,
       Data:decrypted
     });
   
@@ -340,7 +399,26 @@ export const decryptNft = async (req: Request, res: Response) => {
   catch (err) {
     res.status(500).json({ 
         message: 'Unable to Decrypt Nft.', 
-        details:err
+        details:err && (err as any).message?(err as any).message:err
       });
   }
 } 
+
+export const nftTransfer= async (req: Request, res: Response) => {
+  const {nftId,recieverAddress}=req.body;
+  try{
+    const seed=getSeedFromRequest(req);
+    await nftTransferService(nftId,recieverAddress,seed);
+    res.status(200).json({
+        message:`Success! transfer Nft with Id: ${nftId} to Account: ${recieverAddress}.`,
+    })
+  }
+  catch(err){
+    res.status(500).json(
+      {
+        message:`Unable to transfer Nft with Id: ${nftId} to Account: ${recieverAddress} `,
+        details:err && (err as any).message?(err as any).message:err
+      }
+    )
+  }
+}
