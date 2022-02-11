@@ -11,7 +11,7 @@ import { txPallets, txActions } from "../const/tx.const";
 
 const userRouter = Router();
 
-userRouter.get("/api/user/mnemonicGenerate",validationMiddleware(mnemonicGenerateSchema), mnemonicGenerate);
+userRouter.get("/api/user/generate-mnemonic",validationMiddleware(mnemonicGenerateSchema), mnemonicGenerate);
 userRouter.post("/api/user/balances/transfer-keep-alive",validationMiddleware(transferCapsSchema),balanceCheckMiddleware(txPallets.balances,txActions.transferKeepAlive), TransferCapsandKeepAlive);
 
 export default userRouter;
