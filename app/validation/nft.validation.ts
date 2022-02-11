@@ -2,13 +2,10 @@ import Joi from "joi";
 
 
 export const nftBurnSchema: Joi.ObjectSchema = Joi.object({
-    params:{
-        nftId:Joi.string().required()
-    },
     body:{
+        nftId:Joi.string().required(),
         seed:Joi.string()
     }
-    
 })
 export const nftMintSchema: Joi.ObjectSchema = Joi.object({
     body:{
@@ -75,10 +72,8 @@ export const encryptAndUploadMediaSchema:Joi.ObjectSchema= Joi.object({
 });
 
 export const decryptNftSchema : Joi.ObjectSchema = Joi.object({
-    params: {
-        id: Joi.number().required(),
-    },
     body: {
+        nftId: Joi.number().required(),
         seed: Joi.string().optional(),
     }
 });

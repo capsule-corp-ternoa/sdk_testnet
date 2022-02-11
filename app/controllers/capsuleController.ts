@@ -88,7 +88,7 @@ export const getCapsuleMetadata = async (req: Request, res: Response) => {
 
 export const capsuleItemEncrypt = async (req: Request, res: Response) => {
   const file = req.files?.file as UploadedFile;
-  const nftId = req.params.nftId as any;
+  const nftId = req.body.nftId as any;
   const fileName = `enc_${uuid()}_${file.name}`;
   const destPath = getFilePath(fileName);
   file.mv(destPath, async function (err) {
@@ -131,7 +131,7 @@ export const uploadCapsuleJson = async (req: Request, res: Response) => {
 };
 
 export const addFileToCapsule = async (req: Request, res: Response) => {
-  const nftId = req.params.nftId as any;
+  const nftId = req.body.nftId as any;
   const capsuleFile = req.files?.capsuleFile as UploadedFile;
   const {title}= req.body;
   const seed = getSeedFromRequest(req);
@@ -189,7 +189,7 @@ export const nftToCapsule = async (req: Request, res: Response) => {
 }
 
 export const CapsuleToNft = async (req: Request, res: Response) => {
-  const { nftId } = req.params;
+  const { nftId } = req.body;
     const seed = getSeedFromRequest(req);;
     try {
       const sender = await getUserFromSeed(seed);
@@ -228,7 +228,7 @@ export const createCapsule = async (req: Request, res: Response) => {
 
 export const removeFileFromCapsule = async (req: Request, res: Response) => {
   const { fileIpfs } = req.body;
-  const nftId=req.params.nftId as any;
+  const nftId=req.body.nftId as any;
   const seed = getSeedFromRequest(req);
   try {
     const sender = await getUserFromSeed(seed);

@@ -275,7 +275,7 @@ export const burnNftBatch = async (req: Request, res: Response) => {
 };
 
 export const burnNft = async (req: Request, res: Response) => {
-  const { nftId } = req.params as any;
+  const { nftId } = req.body as any;
   const capsuleCheck: any = await isCapsule(nftId);
   if (!capsuleCheck) {
     const seed = getSeedFromRequest(req)
@@ -345,13 +345,13 @@ export const NftUnlist = async (req: Request, res: Response) => {
   }
 }
 export const decryptNft = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { nftId } = req.body;
   const seed = getSeedFromRequest(req);;
   try {
-    const decrypted = await decryptNftOrCapsule(Number(id), seed);
+    const decrypted = await decryptNftOrCapsule(Number(nftId), seed);
     console.log('decrypted', decrypted);
     res.status(200).json({
-      Message:`Nft/Capsule Item Decrypted for Id:${id}.`,
+      Message:`Nft/Capsule Item Decrypted for Id:${nftId}.`,
       Data:decrypted
     });
   
