@@ -76,7 +76,7 @@ export const getNftDataFromIndexer = async (req: Request, res: Response) => {
 };
 
 export const getNftIdBySeries = async (req: Request, res: Response) => {
-  const { seriesId, ownerAddress } = req.body;
+  const { seriesId, ownerAddress } = req.params;
     try {
       const nftIndexerData = await getNftIdsBySeries(seriesId,ownerAddress);
       res.status(200).json(
@@ -94,17 +94,37 @@ export const getNftIdBySeries = async (req: Request, res: Response) => {
     }
 };
 
+export const getNftIdBySeriesId = async (req: Request, res: Response) => {
+  const { seriesId} = req.params;
+    try {
+    //  const nftIndexerData = await //getNftIdsBySeries(seriesId,ownerAddress);
+      res.status(200).json(
+        {
+          Message:`Nft ids against Series Id: ${seriesId}`,
+      //    Data:nftIndexerData
+        });
+
+    }
+    catch (err) {
+      res.status(500).json({ 
+        message: 'Unable to Fetch Nft Ids', 
+        details:err && (err as any).message?(err as any).message:err
+      });
+    }
+};
+
+
 export const getNFTsByOwner = async (req: Request, res: Response) => {
-  const { ownerAddress } = req.params;
+  const { address } = req.params;
   try {
-    const IndexerData = await getNftsByOwner(ownerAddress);
+    const IndexerData = await getNftsByOwner(address);
     let nftIds: Array<object> = []
     if (IndexerData && (IndexerData as any).nodes.length) {
       nftIds = (IndexerData as any).nodes.map((node: any) => (node.id))
     }
     res.status(200).json(
       {
-        Message:`Nft Ids against the Owner Address: ${ownerAddress}`,
+        Message:`Nft Ids against the Owner Address: ${address}`,
         NftIds:nftIds
       }
     );
