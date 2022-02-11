@@ -1,10 +1,11 @@
 
 import {
   mnemonicGenerate,
+  TransferCapsandKeepAlive
 } from "../controllers/userController"
 import { Router } from 'express'
 import { validationMiddleware } from "../validation";
-import { mnemonicGenerateSchema } from "../validation/user.validation";
+import { mnemonicGenerateSchema,transferCapsSchema } from "../validation/user.validation";
 
 const userRouter = Router();
 /*
@@ -14,6 +15,7 @@ const userRouter = Router();
 Generate mnemonic and public address
 */
 userRouter.get("/api/mnemonicGenerate",validationMiddleware(mnemonicGenerateSchema), mnemonicGenerate);
+userRouter.post("/api/balances/transferCaps",validationMiddleware(transferCapsSchema), TransferCapsandKeepAlive);
 
 // /*
 // Upload JSON file to IPFS 
