@@ -30,9 +30,9 @@ export const TransferCapsandKeepAlive = async (req:Request, res:Response) => {
     const {recieverAddress,value}=req.body;
     const seed=getSeedFromRequest(req);
     try{
-      const sender=getUserFromSeed(seed) as any;
+      const sender=await getUserFromSeed(seed) as any;
       const data=await transferKeepAlive(recieverAddress,value,sender)
-      console.log(data);
+      res.status(200).json({Message:"Caps Transfered!"})
     }
     catch(err)
     {
