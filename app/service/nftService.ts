@@ -177,7 +177,8 @@ export const generateAndUploadNftJson = (
     encryptedMediaType: string,
     encryptedMediaIPFSHash: string,
     encryptedMediaSize: string,
-    publicPgpIPFSHash: string) => {
+    publicPgpIPFSHash: string,
+    additionalProperties?: object) => {
     const data = {
         title,
         description,
@@ -194,6 +195,7 @@ export const generateAndUploadNftJson = (
                 size: encryptedMediaSize,
             },
             publicPGP: publicPgpIPFSHash,
+            ...additionalProperties
         },
     }
     const nftJsonFile = contentToStream(JSON.stringify(data), `./tmp/nft_${uuid()}.json`)

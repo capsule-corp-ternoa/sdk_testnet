@@ -191,7 +191,7 @@ export const encryptAndUploadMedia = async (req: Request, res: Response) => {
 export const uploadNFTJson = async (req: Request, res: Response) => {
   const { title, description, imagePreviewIPFSHash, mediaIPFSHash, mediaSize, mediaType, encryptedMediaIPFSHash, encryptedMediaType, encryptedMediaSize, publicPgpIPFSHash } = req.body;
   try {
-    const { url, IPFSHash } = await generateAndUploadNftJson(title, description, imagePreviewIPFSHash, mediaIPFSHash, mediaType, mediaSize, encryptedMediaType, encryptedMediaIPFSHash, encryptedMediaSize, publicPgpIPFSHash);
+    const { url, IPFSHash } = await generateAndUploadNftJson(title, description, imagePreviewIPFSHash, mediaIPFSHash, mediaType, mediaSize, encryptedMediaType, encryptedMediaIPFSHash, encryptedMediaSize, publicPgpIPFSHash, getAdditionalNFTPropertiesFromRequestBody(req.body));
     res.status(200).json({
       Message: 'Nft Json Upload To IPFS!', 
       Data:{
@@ -238,13 +238,38 @@ export const mintNFT = async (req: Request, res: Response) => {
     }
 };
 
-export const createNewNFT = async (req: Request, res: Response,next:NextFunction) => {
+const getAdditionalNFTPropertiesFromRequestBody= (body: any)=>{
+  let additionalProperties=body;
+  console.log('body', body)
+  const propsToRemove=[ 'title', 'description', 'seriesId', 'seed', 'imagePreviewIPFSHash', 'mediaIPFSHash', 'mediaSize', 'mediaType', 'encryptedMediaIPFSHash', 'encryptedMediaType', 'encryptedMediaSize', 'publicPgpIPFSHash' ]
+  for(let i=0; i<propsToRemove.length; i++) {
+    if(additionalProperties[propsToRemove[i]]){
+      // console.log('removing',propsToRemove[i],'val:', additionalProperties[propsToRemove[i]])
+      delete additionalProperties[propsToRemove[i]]
+    }
+  }
+ const additionalPropertiesKeys=Object.keys(additionalProperties)
+  if(additionalPropertiesKeys.length==0){
+    additionalProperties=null
+  }else {
+    
+    for(let i=0; i<additionalPropertiesKeys.length; i++) {
+      try{
+        additionalProperties[additionalPropertiesKeys[i]]=JSON.parse(additionalProperties[additionalPropertiesKeys[i]])
+      }catch(err){
+        console.log('could not parse', additionalPropertiesKeys[i], 'val', additionalProperties[additionalPropertiesKeys[i]],'added as string')
+      }
+    }
+  
+  }
+  return additionalProperties
+}
 
+export const createNewNFT = async (req: Request, res: Response,next:NextFunction) => {
   const previewFile = req.files?.previewFile as UploadedFile;
   const encryptFile =req.files?.encryptFile as UploadedFile;
   const ImagePreviewFile=req.files?.ImagePreviewFile as UploadedFile;
   const {title,description,seriesId}=req.body;
-  
   const seed = getSeedFromRequest(req)
   const sender = await getUserFromSeed(seed);
   try {
@@ -256,7 +281,8 @@ export const createNewNFT = async (req: Request, res: Response,next:NextFunction
     Promise.all([PreviewFileData,encryptedData,imagePreviewData]).then(async(values)=>{
       const { url, IPFSHash } = await generateAndUploadNftJson(title, description, imagePreviewData?values[2].mediaIPFSHash:null,
               values[0].mediaIPFSHash, values[0].mediaType, values[0].mediaSize, values[1].encryptedMediaType,
-              values[1].encryptedMediaIPFSHash,values[1].encryptedMediaSize, values[1].publicPgpIPFSHash);
+              values[1].encryptedMediaIPFSHash,values[1].encryptedMediaSize, values[1].publicPgpIPFSHash,getAdditionalNFTPropertiesFromRequestBody(req.body));
+              console.log('url', url)
       const nftId = await createNft(IPFSHash,seriesId?seriesId:'', sender) as any;
       if(nftId)
       {

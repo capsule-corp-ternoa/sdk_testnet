@@ -37,10 +37,12 @@ nftRouter.post("/api/nft/create", validationMiddleware(createNewNftSchema),check
 nftRouter.post("/api/nft/burn",validationMiddleware(nftBurnSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.nfts, txActions.burn),checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware,checkNftNotBurntMiddleware, burnNft);
 nftRouter.post("/api/nft/burn-batch",validationMiddleware(nftBatchShema),balanceCheckMiddleware(txPallets.nfts, txActions.burn), burnNftBatch);
 nftRouter.post("/api/nft/list",validationMiddleware(nftSaleSchema),checkSerieinDraftMiddleWare,contextSetterMiddleware, balanceCheckMiddleware(txPallets.marketplace, txActions.list),checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware,checkNftNotBurntMiddleware, checkNFTNotListedMiddleware, NftSale);
+// nftRouter.post("/api/nft/list-series-autolock",validationMiddleware(nftSaleSchema),checkSerieinDraftMiddleWare,contextSetterMiddleware, balanceCheckMiddleware(txPallets.marketplace, txActions.list),checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware,checkNftNotBurntMiddleware, checkNFTNotListedMiddleware, NftSale);
 nftRouter.post("/api/nft/unlist", validationMiddleware(unlistNftSchema),checkSerieinDraftMiddleWare,contextSetterMiddleware, balanceCheckMiddleware(txPallets.nfts, txActions.unlist),checkNftOwnershipMiddleware,checkNftListedMiddleware, NftUnlist);
 
 nftRouter.post("/api/nft/decrypt", validationMiddleware(decryptNftSchema),contextSetterMiddleware, checkNftOwnershipMiddleware,checkNftNotBurntMiddleware, decryptNft);
 nftRouter.post("/api/nft/transfer", validationMiddleware(nftTransferScehma),contextSetterMiddleware,checkSerieinDraftMiddleWare,balanceCheckMiddleware(txPallets.nfts, txActions.transfer),checkNftOwnershipMiddleware,checkNftNotBurntMiddleware,nftTransfer);
+// nftRouter.post("/api/nft/transfer-series-autolock", validationMiddleware(nftTransferScehma),contextSetterMiddleware,checkSerieinDraftMiddleWare,balanceCheckMiddleware(txPallets.nfts, txActions.transfer),checkNftOwnershipMiddleware,checkNftNotBurntMiddleware,nftTransfer);
 
 nftRouter.get("/api/nft/:id",validationMiddleware(getNftDataSchema), getNftDataFromIndexer);
 nftRouter.get("/api/nft/owner/:address", validationMiddleware(getNftDataByOwnerScehma),getNFTsByOwner);
