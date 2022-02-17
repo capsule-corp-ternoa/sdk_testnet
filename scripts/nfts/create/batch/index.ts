@@ -85,14 +85,14 @@ const processBatchNftItem = (item: any) => {
                     pgpList.push(pgp);
                     const [{ IPFSHash: encryptedMediaIPFSHash, mediaType: encryptedMediaType, size: encryptedMediaSize }, { IPFSHash: publicPgpIPFSHash }] =
                         await cryptAndUploadNFT(secretFileStream, pgp.publicKey) as any;
-                    //console.log('cryptAndUploadNFT ok', encryptedMediaIPFSHash, encryptedMediaType, publicPgpIPFSHash);
+                    console.log('cryptAndUploadNFT ok', encryptedMediaIPFSHash, encryptedMediaType, publicPgpIPFSHash);
 
                     const {
                         url: nftJson,
                         IPFSHash: nftIPFSHash
                     } = await generateAndUploadNftJson(title, description, imagePreviewIPFSHash, mediaIPFSHash, mediaType, mediaSize, encryptedMediaType, encryptedMediaIPFSHash, encryptedMediaSize, publicPgpIPFSHash) as any;
 
-                    //console.log('nftJson', nftJson);
+                    console.log('nftJson', nftJson);
                     success({
                         // media,
                         // mediaType,
@@ -112,7 +112,7 @@ const processBatchNftItem = (item: any) => {
             const user = await getUserFromSeed(Wallet);
             //console.log('user address', user.address);
             //console.log('seriesid', seriesId)
-            const { nftsData } = await createNftBatch(nftBatch.map((nftBatchItem: any) => nftBatchItem.nftIPFSHash), seriesId ? seriesId : null, user) as any;
+            const { nftsData } = await createNftBatch(nftBatch.map((nftBatchItem: any) =>nftBatchItem.nftIPFSHash), seriesId ? seriesId : null, user) as any;
             const onlyIds = nftsData.map((nft: any) => nft.nftId)
             //console.info(`successfully minted nft ${item[csvCols.title]} with ids: ${onlyIds}`);
             // const sgxResponses = await Promise.all(nftsData.map((nftData:any) => {
@@ -162,14 +162,14 @@ const timeLabel = `processNftBatch-${Date.now()}`;
 initializeApi().then(() => {
     processNftBatch()
         .catch(e => {
-            //console.error('Error caught:' + e);
+            console.error('Error caught:' + e);
         })
         .finally(() => {
-            //console.info('process finished');
-            //console.timeEnd(timeLabel)
+            console.info('process finished');
+            console.timeEnd(timeLabel)
             safeDisconnect();
             process.exit();
         });
 }).catch((err: any) => {
-    //console.log('init err', err)
+    console.log('init err', err)
 })

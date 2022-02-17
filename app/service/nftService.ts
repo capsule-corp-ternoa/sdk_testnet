@@ -68,9 +68,20 @@ export const cryptData = async (data: any, publicPGP: string) => {
 }
 
 export const createNftTransaction = async (nftIPFSHash: string, seriesId: string) => ((await getApi()).tx.nfts.create(nftIPFSHash, seriesId ? seriesId : null));
-export const createNftBatch = (jsonNftBatch: any, seriesId: string, user: any) => {
-    return new Promise(async (resolve, reject) => {
-
+export const createNftBatch =async (jsonNftBatch: any, seriesId: string, user: any) => {
+    try{
+        console.log(jsonNftBatch);
+        const nftTransactions = await Promise.all(jsonNftBatch.map((jsonNftbatch: string) => {
+            console.log(jsonNftBatch)
+            createNftTransaction(jsonNftbatch,seriesId)}));
+        const { event, data } = await runTransaction(txPallets.utility, txActions.batch, user, [nftTransactions], false, txEvent.nftsCreated)
+        const nft_Id =  data[0].toString();
+        return nft_Id;
+    }
+    catch(err){
+        return err
+    }
+   /* return new Promise(async (resolve, reject) => {
         const nftTransactions = await Promise.all(jsonNftBatch.map((jsonNftItemHash: any) => createNftTransaction(jsonNftItemHash, seriesId)));
         const nftsDataList: any = [];
         const unsub = await ((await getApi()).tx.utility.batch(nftTransactions)).signAndSend(user, ({
@@ -78,6 +89,7 @@ export const createNftBatch = (jsonNftBatch: any, seriesId: string, user: any) =
             status = { isInBlock: false }
         }) => {
             if (status.isInBlock) {
+                console.log("hello I'm in block")
                 events.forEach(async ({
                     event
                 }) => {
@@ -86,6 +98,7 @@ export const createNftBatch = (jsonNftBatch: any, seriesId: string, user: any) =
                         method,
                         section
                     } = event;
+                    console.log("Section.method:",`${section}.${method}`)
                     if (`${section}.${method}` === 'nfts.Created') {
                         const nftId = <string>data[0];
                         const nftIpfs = Buffer.from(data[3], 'hex').toString('utf8');
@@ -103,7 +116,7 @@ export const createNftBatch = (jsonNftBatch: any, seriesId: string, user: any) =
                 });
             }
         });
-    })
+    })*/
 };
 
 export const getNftDatafromIpfs = async (ipfs: string) => {
