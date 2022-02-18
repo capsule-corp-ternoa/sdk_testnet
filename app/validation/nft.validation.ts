@@ -42,7 +42,7 @@ export const uploadNFTJsonSchema: Joi.ObjectSchema=Joi.object({
 
 export const getNftDataSchema: Joi.ObjectSchema=Joi.object({
     params: {
-        id: Joi.number().required(),
+        id: Joi.number().integer().min(1)
     }
 })
 export const createNewNftSchema:Joi.ObjectSchema = Joi.object({
@@ -106,7 +106,7 @@ export const nftSaleSchema: Joi.ObjectSchema = Joi.object({
 });
 export const getNftDataByOwnerScehma:Joi.ObjectSchema=Joi.object({
     params: {
-        address: Joi.string().required(),
+        address: Joi.string().min(1).required()
     }
 })
 

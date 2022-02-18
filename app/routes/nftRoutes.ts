@@ -18,17 +18,16 @@ import {
     nftTransfer,
     getNftIdBySeriesForOwner
 } from "../controllers/nftController";
-
 import { validationMiddleware } from "../validation";
 import { createNewNftSchema ,encryptAndUploadMediaSchema,decryptNftSchema, nftTransferScehma, unlistNftSchema,nftMintSchema,uploadNFTJsonSchema,
     getNftDataSchema, nftBurnSchema, getNftIdBySeriesSchema,serieLockSchema,nftSaleSchema,getNftDataByOwnerScehma,nftBatchShema, getNftIdBySeriesForOwnerSchema} from "../validation/nft.validation";
 import { balanceCheckMiddleware } from '../middleware/balance';
 import { checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware, checkPrivateKeyExistance, checkNftNotBurntMiddleware, checkNFTNotListedMiddleware, checkNftListedMiddleware,CheckPreviewFile, checkSerieLockedMiddleWare,checkSerieinDraftMiddleWare} from '../middleware/nft';
-import { contextSetterMiddleware } from '../middleware/common';
+import { contextSetterMiddleware ,fileSizeCheck} from '../middleware/common';
 
 const nftRouter = Router();
 
-nftRouter.post("/api/nft/media/encrypt-and-upload",validationMiddleware(encryptAndUploadMediaSchema), encryptAndUploadMedia);
+nftRouter.post("/api/nft/media/encrypt-and-upload",validationMiddleware(encryptAndUploadMediaSchema),fileSizeCheck, encryptAndUploadMedia);
 nftRouter.post("/api/nft/upload-json",validationMiddleware(uploadNFTJsonSchema), uploadNFTJson);
 
 nftRouter.post("/api/nft/mint",validationMiddleware(nftMintSchema),checkSerieLockedMiddleWare,balanceCheckMiddleware(txPallets.nfts, txActions.create),checkPrivateKeyExistance, mintNFT);

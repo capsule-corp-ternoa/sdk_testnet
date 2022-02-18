@@ -35,3 +35,21 @@ const contextNftSetter = async (req: Request) => {
     }
     req.body.nft = nftData;
 }
+
+export const checkMimeType=async(req:Request,res:Response,next:NextFunction)=>{
+    const file=req.files?.file as any;
+    if(file.mimetype==='image/jpeg' || file.mimetype==='image/png' || file.mimetype==='image/svg' || file.mimetype==='video/mp4')
+    {
+        next();
+    }
+    else
+    {
+        res.status(403).send('file type must be of jpeg,png,svg or mp4!')
+    }   
+}
+
+export const fileSizeCheck=async(req:Request,res:Response,next:NextFunction)=>{
+    const file=req.files?.file as any;
+    let sizeInMbs=(file.size/1024)/1024;
+    sizeInMbs<=30?next():res.status(403).send("File Size Must be Less than 30mbs")
+}
