@@ -25,7 +25,7 @@ class TernoaIpfsApi {
             }
             const formData = new FormData();
             formData.append('file', stream);
-            console.log('IPFS base URL', baseUrl);
+            //console.log('IPFS base URL', baseUrl);
             const response = await fetch(`${baseUrl}/add`, {
                 method: 'POST',
                 body: formData,

@@ -129,3 +129,26 @@ export const checkSerieinDraftMiddleWare=async (req: Request, res: Response, nex
     }
     else{res.status(403).send("Forbidden!! SeriesId Not valid or not available!")}
 }
+
+export const checkSerieIdExistenceMiddleware=async (req: Request, res: Response, next: NextFunction)=>{ 
+    const {seriesId}=req.body;
+    
+    if(seriesId){
+        const SeriesData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.series(seriesId)));
+         if(SeriesData)
+         {
+            const seed=getSeedFromRequest(req);
+            const user=await getUserFromSeed(seed) as any;
+            if(user.address){
+                if(SeriesData.owner==user.address)
+                {
+                    next();
+                }
+                else{res.status(400).send("Not a seriesID Owner!")}
+            }
+            else{res.status(400).send("Invalid User!")}
+        }
+        else{res.status(400).send("Serie Not Found/Invalid!")}
+    }
+        else{res.status(400).send("Invalid SeriesId!")}
+}

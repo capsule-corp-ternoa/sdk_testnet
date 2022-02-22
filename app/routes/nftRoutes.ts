@@ -22,7 +22,7 @@ import { validationMiddleware } from "../validation";
 import { createNewNftSchema ,encryptAndUploadMediaSchema,decryptNftSchema, nftTransferScehma, unlistNftSchema,nftMintSchema,uploadNFTJsonSchema,
     getNftDataSchema, nftBurnSchema, getNftIdBySeriesSchema,serieLockSchema,nftSaleSchema,getNftDataByOwnerScehma,nftBatchShema, getNftIdBySeriesForOwnerSchema} from "../validation/nft.validation";
 import { balanceCheckMiddleware } from '../middleware/balance';
-import { checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware, checkPrivateKeyExistance, checkNftNotBurntMiddleware, checkNFTNotListedMiddleware, checkNftListedMiddleware,CheckPreviewFile, checkSerieLockedMiddleWare,checkSerieinDraftMiddleWare} from '../middleware/nft';
+import { checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware, checkPrivateKeyExistance, checkNftNotBurntMiddleware, checkNFTNotListedMiddleware, checkNftListedMiddleware,CheckPreviewFile, checkSerieLockedMiddleWare,checkSerieIdExistenceMiddleware,checkSerieinDraftMiddleWare} from '../middleware/nft';
 import { contextSetterMiddleware ,fileSizeCheck} from '../middleware/common';
 
 const nftRouter = Router();
@@ -48,6 +48,6 @@ nftRouter.get("/api/nft/owner/:address", validationMiddleware(getNftDataByOwnerS
 nftRouter.get("/api/nft/owned-in-series/:address/:seriesId", validationMiddleware(getNftIdBySeriesForOwnerSchema), getNftIdBySeriesForOwner);
 nftRouter.get("/api/nft/series/:seriesId", validationMiddleware(getNftIdBySeriesSchema), getNftIdBySeries);
 
-nftRouter.post("/api/nft/series/lock",validationMiddleware(serieLockSchema), balanceCheckMiddleware(txPallets.nfts, txActions.finishSeries),checkSerieLockedMiddleWare, serieLock);
+nftRouter.post("/api/nft/series/lock",validationMiddleware(serieLockSchema),checkSerieIdExistenceMiddleware, balanceCheckMiddleware(txPallets.nfts, txActions.finishSeries),checkSerieLockedMiddleWare, serieLock);
 
 export default nftRouter;

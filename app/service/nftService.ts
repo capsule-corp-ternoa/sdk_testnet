@@ -67,13 +67,12 @@ export const cryptData = async (data: any, publicPGP: string) => {
     return encrypted
 }
 
-export const createNftTransaction = async (nftIPFSHash: string, seriesId: string) => ((await getApi()).tx.nfts.create(nftIPFSHash, seriesId ? seriesId : null));
+export const createNftTransaction = async (nftIPFSHash: string, seriesId: string) =>((await getApi()).tx.nfts.create(nftIPFSHash, seriesId ? seriesId : ''))
 export const createNftBatch =async (jsonNftBatch: any, seriesId: string, user: any) => {
     try{
-        console.log(jsonNftBatch);
-        const nftTransactions = await Promise.all(jsonNftBatch.map((jsonNftbatch: string) => {
-            console.log(jsonNftBatch)
-            createNftTransaction(jsonNftbatch,seriesId)}));
+         const nftTransactions = await Promise.all(jsonNftBatch.map((jsonNftbatch: string) => createNftTransaction(jsonNftbatch,seriesId)));
+        //const nftTransactions =await (await ( await (jsonNftBatch.map((jsonNftbatch: string) =>createNftTransaction(jsonNftbatch,seriesId)))));
+        console.log(nftTransactions);
         const { event, data } = await runTransaction(txPallets.utility, txActions.batch, user, [nftTransactions], false, txEvent.nftsCreated)
         const nft_Id =  data[0].toString();
         return nft_Id;
