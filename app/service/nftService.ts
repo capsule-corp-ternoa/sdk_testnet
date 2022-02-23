@@ -67,7 +67,20 @@ export const cryptData = async (data: any, publicPGP: string) => {
     return encrypted
 }
 
-export const createNftTransaction = async (nftIPFSHash: string, seriesId: string) =>((await getApi()).tx.nfts.create(nftIPFSHash, seriesId ? seriesId : ''))
+export const burnNftTransaction = async (nftId: string) => ((await getApi()).tx.nfts.burn(nftId));
+export const burnNftsBatchService =async (nftIds: any, user: any) => {
+    try{
+        const nftTransactions = await Promise.all(nftIds.map((nftId: string) => burnNftTransaction(nftId)));
+        const { event, data } = await runTransaction(txPallets.utility, txActions.batch, user, [nftTransactions], false, txEvent.nftsBurned)
+        const nft_Id =  data[0].toString();
+        return nft_Id;
+    }
+    catch(err){
+        return err
+    }
+};
+
+export const createNftTransaction = async (nftIPFSHash: string, seriesId: string) => ((await getApi()).tx.nfts.create(nftIPFSHash, seriesId ? seriesId : ''))
 export const createNftBatch =async (jsonNftBatch: any, seriesId: string, user: any) => {
     try{
          const nftTransactions = await Promise.all(jsonNftBatch.map((jsonNftbatch: string) => createNftTransaction(jsonNftbatch,seriesId)));
@@ -76,6 +89,7 @@ export const createNftBatch =async (jsonNftBatch: any, seriesId: string, user: a
         const { event, data } = await runTransaction(txPallets.utility, txActions.batch, user, [nftTransactions], false, txEvent.nftsCreated)
         const nft_Id =  data[0].toString();
         return nft_Id;
+        
     }
     catch(err){
         return err
@@ -150,18 +164,7 @@ export const createNft = async (nftIpfs: string, seriesId: string, user: any) =>
     }
 };
 
-export const burnNftTransaction = async (nftId: string) => ((await getApi()).tx.nfts.burn(nftId));
-export const burnNftsBatchService =async (nftIds: any, user: any) => {
-    try{
-        const nftTransactions = await Promise.all(nftIds.map((nftId: string) => burnNftTransaction(nftId)));
-        const { event, data } = await runTransaction(txPallets.utility, txActions.batch, user, [nftTransactions], false, txEvent.nftsBurned)
-        const nft_Id =  data[0].toString();
-        return nft_Id;
-    }
-    catch(err){
-        return err
-    }
-};
+
 
 export const burnNftService = async (nftId: any, user: any) => {
     try{
