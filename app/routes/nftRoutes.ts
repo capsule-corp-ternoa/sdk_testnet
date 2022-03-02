@@ -23,7 +23,7 @@ import { createNewNftSchema ,encryptAndUploadMediaSchema,decryptNftSchema, nftTr
     getNftDataSchema, nftBurnSchema, getNftIdBySeriesSchema,serieLockSchema,nftSaleSchema,getNftDataByOwnerScehma,nftBatchShema, getNftIdBySeriesForOwnerSchema} from "../validation/nft.validation";
 import { balanceCheckMiddleware } from '../middleware/balance';
 import { checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware, checkPrivateKeyExistance, checkNftNotBurntMiddleware, checkNFTNotListedMiddleware, checkNftListedMiddleware,CheckPreviewFile, checkSerieLockedMiddleWare,checkSerieIdExistenceMiddleware,checkSerieinDraftMiddleWare} from '../middleware/nft';
-import { contextSetterMiddleware ,fileSizeCheck} from '../middleware/common';
+import { contextSetterMiddleware ,fileSizeCheck,allFileSizeChecks} from '../middleware/common';
 
 const nftRouter = Router();
 
@@ -31,7 +31,7 @@ nftRouter.post("/api/nft/media/encrypt-and-upload",validationMiddleware(encryptA
 nftRouter.post("/api/nft/upload-json",validationMiddleware(uploadNFTJsonSchema), uploadNFTJson);
 
 nftRouter.post("/api/nft/mint",validationMiddleware(nftMintSchema),checkSerieLockedMiddleWare,balanceCheckMiddleware(txPallets.nfts, txActions.create),checkPrivateKeyExistance, mintNFT);
-nftRouter.post("/api/nft/create", validationMiddleware(createNewNftSchema),checkSerieLockedMiddleWare, balanceCheckMiddleware(txPallets.nfts, txActions.create),CheckPreviewFile,createNewNFT);
+nftRouter.post("/api/nft/create", validationMiddleware(createNewNftSchema),allFileSizeChecks ,checkSerieLockedMiddleWare, balanceCheckMiddleware(txPallets.nfts, txActions.create),CheckPreviewFile,createNewNFT);
 
 nftRouter.post("/api/nft/burn",validationMiddleware(nftBurnSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.nfts, txActions.burn),checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware,checkNftNotBurntMiddleware, burnNft);
 nftRouter.post("/api/nft/burn-batch",validationMiddleware(nftBatchShema),balanceCheckMiddleware(txPallets.nfts, txActions.burn), burnNftBatch);

@@ -71,6 +71,7 @@ export const burnNftTransaction = async (nftId: string) => ((await getApi()).tx.
 export const burnNftsBatchService =async (nftIds: any, user: any) => {
     try{
         const nftTransactions = await Promise.all(nftIds.map((nftId: string) => burnNftTransaction(nftId)));
+        console.log(nftTransactions);
         const { event, data } = await runTransaction(txPallets.utility, txActions.batch, user, [nftTransactions], false, txEvent.nftsBurned)
         const nft_Id =  data[0].toString();
         return nft_Id;
@@ -82,19 +83,19 @@ export const burnNftsBatchService =async (nftIds: any, user: any) => {
 
 export const createNftTransaction = async (nftIPFSHash: string, seriesId: string) => ((await getApi()).tx.nfts.create(nftIPFSHash, seriesId ? seriesId : ''))
 export const createNftBatch =async (jsonNftBatch: any, seriesId: string, user: any) => {
-    try{
+     /*try{
          const nftTransactions = await Promise.all(jsonNftBatch.map((jsonNftbatch: string) => createNftTransaction(jsonNftbatch,seriesId)));
-        //const nftTransactions =await (await ( await (jsonNftBatch.map((jsonNftbatch: string) =>createNftTransaction(jsonNftbatch,seriesId)))));
-        console.log(nftTransactions);
-        const { event, data } = await runTransaction(txPallets.utility, txActions.batch, user, [nftTransactions], false, txEvent.nftsCreated)
-        const nft_Id =  data[0].toString();
-        return nft_Id;
+    //     //const nftTransactions =await (await ( await (jsonNftBatch.map((jsonNftbatch: string) =>createNftTransaction(jsonNftbatch,seriesId)))));
+         console.log(nftTransactions);
+         const data = await runTransaction(txPallets.utility, txActions.batch, user, [nftTransactions], false, txEvent.nftsCreated)
+         const nft_Id = data// data[0].toString();
+         return nft_Id;
         
-    }
+     }
     catch(err){
-        return err
-    }
-   /* return new Promise(async (resolve, reject) => {
+        throw err
+     }*/
+    return new Promise(async (resolve, reject) => {
         const nftTransactions = await Promise.all(jsonNftBatch.map((jsonNftItemHash: any) => createNftTransaction(jsonNftItemHash, seriesId)));
         const nftsDataList: any = [];
         const unsub = await ((await getApi()).tx.utility.batch(nftTransactions)).signAndSend(user, ({
@@ -113,7 +114,8 @@ export const createNftBatch =async (jsonNftBatch: any, seriesId: string, user: a
                     } = event;
                     console.log("Section.method:",`${section}.${method}`)
                     if (`${section}.${method}` === 'nfts.Created') {
-                        const nftId = <string>data[0];
+                        
+                        const nftId = data[0];
                         const nftIpfs = Buffer.from(data[3], 'hex').toString('utf8');
                         nftsDataList.push({ nftId, nftIpfs });
                     } else if (`${section}.${method}` === 'utility.BatchInterrupted') {
@@ -129,7 +131,7 @@ export const createNftBatch =async (jsonNftBatch: any, seriesId: string, user: a
                 });
             }
         });
-    })*/
+    })
 };
 
 export const getNftDatafromIpfs = async (ipfs: string) => {
@@ -235,7 +237,7 @@ export const checkIsNftCapsule = (nftData:any)=> nftData.isCapsule === true;
 
 export const listNft = async (nftId: number, seed: string, price: number, mpId: number): Promise<any> => {
     const sender = await getUserFromSeed(seed);
-    return runTransaction(txPallets.marketplace, txActions.list, sender, [nftId, getChainPrice(price), mpId], false, 'marketplace.NftListed')
+    return runTransaction(txPallets.marketplace, txActions.list, sender, [nftId, getChainPrice(null as any,price), mpId], false, 'marketplace.NftListed')
 };
 export const lockNftSerie = async (seriesId: string, seed: string): Promise<any> => {
     const sender = await getUserFromSeed(seed);

@@ -105,6 +105,13 @@ export const getCapsuleMintPrice = async () => {
     return balance
 }
 
+export const getUtilityMintPrice = async () => {
+    const utilityMintPrice = await (await getApi()).query.utility.batch;
+    //balance = (Number(unFormatBalance(capsuleMintPrice)) / Math.pow(10, 18))
+    console.log(utilityMintPrice)
+    //return balance
+}
+
 export const getExtrinsicFee = async () => {
     const extrinsicsFee = await (await getApi()).query.transactionPayment.nextFeeMultiplier();
     balance = (Number(unFormatBalance(extrinsicsFee)) / Math.pow(10, 18))
@@ -304,6 +311,8 @@ export const BalanceCheck = async (addressOrSeed: string, pallet: string, action
             switch(action){
                 case txActions.create:
                     const mpMintPrice=await getMarketplaceMintPrice();
+                    console.log("User Balance",userBalance);
+                    console.log("Required Balance",mpMintPrice + extrinsicsFee);
                     return (userBalance > mpMintPrice + extrinsicsFee)
             }        
         case txPallets.capsules:
@@ -312,6 +321,14 @@ export const BalanceCheck = async (addressOrSeed: string, pallet: string, action
                     const capsuleMintFee = await getCapsuleMintPrice();
                     return (userBalance > capsuleMintFee + extrinsicsFee)
             }
+        case txPallets.utility:
+            switch (action) {
+                case txActions.batch:
+                    const capsuleMintFee = await getCapsuleMintPrice();
+
+                    return (userBalance > capsuleMintFee + extrinsicsFee)
+            }
+
         default:
             return (userBalance > extrinsicsFee);
     }

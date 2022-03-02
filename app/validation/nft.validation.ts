@@ -106,7 +106,7 @@ export const nftSaleSchema: Joi.ObjectSchema = Joi.object({
 });
 export const getNftDataByOwnerScehma:Joi.ObjectSchema=Joi.object({
     params: {
-        address: Joi.string().min(1).required()
+        address: Joi.string().min(48).required()
     }
 })
 

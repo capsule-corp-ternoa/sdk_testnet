@@ -8,7 +8,7 @@ import {    readFile,
             generatePgp, 
         } from "../../../../common";
 import { getSgxNodes } from "../../../../app/service/sgxService";
-import { getUserFromSeed, initializeApi, safeDisconnect } from '../../../../app/service/blockchain.service';
+import { getApi, getUserFromSeed, getUtilityMintPrice, initializeApi, safeDisconnect } from '../../../../app/service/blockchain.service';
 
 const filePath = process.env.CSV_FILE_PATH;
 const nftFolderPath = process.env.NFT_FOLDER;
@@ -54,10 +54,20 @@ if (!shamirPath) {
     //console.error('No shamir path given')
     process.exit()
 }
-
+const SerieLocked=async (seriesId:string)=>{
+    const seriesData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.series(seriesId)));
+    if(seriesData){if(seriesData.draft===true){return true} else {return false}}
+    else{return true}
+}
+const checkSerieOwner=async(seriesId:string,user:any)=>{
+    const seriesData=JSON.parse(JSON.stringify(await (await getApi()).query.nfts.series(seriesId)));
+    if(seriesData){if(seriesData.owner===user.address){return true} else {return false}}
+    else{return true}
+}
 const processBatchNftItem = (item: any) => {
     return new Promise<void>(async (resolve, error) => {
         try {
+               await getUtilityMintPrice();
             const {
                 [csvCols.mnemonic]: Wallet,
                 [csvCols.previewFileName]: fileName,
@@ -108,12 +118,17 @@ const processBatchNftItem = (item: any) => {
                 }
             }));
             const nftBatch = await Promise.all(secretAndExRequests);
-
             const user = await getUserFromSeed(Wallet);
-            //console.log('user address', user.address);
-            //console.log('seriesid', seriesId)
-            const { nftsData } = await createNftBatch(nftBatch.map((nftBatchItem: any) =>nftBatchItem.nftIPFSHash), seriesId ? seriesId : null, user) as any;
-            const onlyIds = nftsData.map((nft: any) => nft.nftId)
+            const isSeriesNotLocked=await SerieLocked(seriesId);
+            const isSerieOwner=await checkSerieOwner(seriesId,user);
+            if(isSerieOwner===true)
+            {
+                if(isSeriesNotLocked===true)
+                {
+                 
+                    //   const  {nftsData}  = await createNftBatch(nftBatch.map((nftBatchItem: any) =>nftBatchItem.nftIPFSHash), seriesId ? seriesId : null, user) as any;
+         //   const onlyIds = nftsData.map((nft: any) => nft.nftId.toString())
+         //   console.log(onlyIds)
             //console.info(`successfully minted nft ${item[csvCols.title]} with ids: ${onlyIds}`);
             // const sgxResponses = await Promise.all(nftsData.map((nftData:any) => {
             //     return new Promise<void>(async (ok, ko) => {
@@ -128,6 +143,19 @@ const processBatchNftItem = (item: any) => {
             // }));
             // //console.info(`successfully uploaded to sgx ${sgxResponses} - len=${sgxResponses.length}`);
 
+                }
+                else
+                {
+                    console.log('Series Id is Locked!')
+                }
+            }
+            else{
+                console.log('Not a serie Id Owner!')
+            }
+            
+            //console.log('user address', user.address);
+            //console.log('seriesid', seriesId)
+         
             resolve();
         } catch (e) {
             error(e);

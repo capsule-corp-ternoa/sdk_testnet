@@ -53,3 +53,21 @@ export const fileSizeCheck=async(req:Request,res:Response,next:NextFunction)=>{
     let sizeInMbs=(file.size/1024)/1024;
     sizeInMbs<=30?next():res.status(403).send("File Size Must be Less than 30mbs")
 }
+
+export const allFileSizeChecks=async (req: Request, res: Response, next: NextFunction)=>{ 
+    const previewFile=req.files?.previewFile as any;
+    const encryptFile=req.files?.encryptFile as any;
+    const ImagePreviewFile=req.files?.ImagePreviewFile as any;
+    const previewFileSize= (previewFile.size/1024)/1024;
+    const encryptFileSize= (encryptFile.size/1024)/1024;
+    const ImagePreviewFileSize=ImagePreviewFile? (ImagePreviewFile.size/1024)/1024:-1;
+    if(previewFileSize<=30 && encryptFileSize<=30 && ((ImagePreviewFileSize!=-1 && ImagePreviewFileSize<=30) || ImagePreviewFileSize===-1 ))
+    {
+        next();
+    }
+    else
+    {
+        res.status(400).send("Media File size must be less than 30 mbs!");
+    }
+
+}
