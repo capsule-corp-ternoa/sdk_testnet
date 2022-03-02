@@ -3,30 +3,34 @@ import { txActions, txPallets } from '../const/tx.const';
 import { balanceCheckMiddleware } from '../middleware/balance';
 import { validationMiddleware } from "../validation";
 import { createMarketPlaceSchema,
-    MarketPlaceByOwnerSchema,
+    addAccountToAllowListSchema,
     setKindSchema,
     setNameSchema,
     MarketPlaceByIdSchema,
     setCommissionFeeSchema,
     setOwnerFeeSchema,
     setUriSchema,
-    setLogoUriSchema
+    setLogoUriSchema,
+    
 } from "../validation/marketPlace.validation";
 
 import { createMarketPlace ,
     getMarketplaceDataByOwner,
+    removeAccountFromAllowList,
     getMarketplaceById,
     setKindForMarketPlace,
     getMarketplaceByIdFromChain,
+    addAccountToAllowList,
     setCommissionFee,
     setOwnerForMarketPlace,
     setNameForMarketPlace,
     setUriForMarketPlace,
     setlogoUriForMarketPlace,
-    getAllMarketplaceFromChain
-    
+    getAllMarketplaceFromChain,
+    addAccountToDisAllowList,
+    removeAccountFromDisAllowList
 } from "../controllers/MarketPlaceController";
-import { checkMpOwnershipMiddleware } from '../middleware/marketplace';
+import { checkMpOwnershipMiddleware ,marketPlaceTypeMiddleWare,marketPlacePublicTypeMiddleWare} from '../middleware/marketplace';
 
 const marketplaceRouter = Router();
 
@@ -37,8 +41,10 @@ marketplaceRouter.post("/api/marketplace/update/type",  validationMiddleware(set
 marketplaceRouter.post("/api/marketplace/update/name",  validationMiddleware(setNameSchema),balanceCheckMiddleware(txPallets.marketplace, txActions.setName),checkMpOwnershipMiddleware, setNameForMarketPlace);
 marketplaceRouter.post("/api/marketplace/update/uri",  validationMiddleware(setUriSchema),balanceCheckMiddleware(txPallets.marketplace, txActions.setUri),checkMpOwnershipMiddleware, setUriForMarketPlace);
 marketplaceRouter.post("/api/marketplace/update/logo-uri",  validationMiddleware(setLogoUriSchema),balanceCheckMiddleware(txPallets.marketplace, txActions.setLogoUri),checkMpOwnershipMiddleware, setlogoUriForMarketPlace);
-// marketplaceRouter.get("/api/marketplace/getMarketplacesForOwner/:ownerAddress", validationMiddleware(MarketPlaceByOwnerSchema), getMarketplaceDataByOwner);
-// marketplaceRouter.get("/api/marketplace/getMarketplaceById/:id",  validationMiddleware(MarketPlaceByIdSchema), getMarketplaceById);
+marketplaceRouter.post("/api/marketplace/update/add-account-to-allow-list",  validationMiddleware(addAccountToAllowListSchema),marketPlaceTypeMiddleWare,balanceCheckMiddleware(txPallets.marketplace, txActions.addAccountToAllowList),checkMpOwnershipMiddleware, addAccountToAllowList);
+marketplaceRouter.post("/api/marketplace/update/add-account-to-disallow-list",  validationMiddleware(addAccountToAllowListSchema),marketPlacePublicTypeMiddleWare,balanceCheckMiddleware(txPallets.marketplace, txActions.addAccountToDisallowList),checkMpOwnershipMiddleware, addAccountToDisAllowList);
+marketplaceRouter.post("/api/marketplace/update/remove-account-from-allow-list",  validationMiddleware(addAccountToAllowListSchema),marketPlaceTypeMiddleWare,balanceCheckMiddleware(txPallets.marketplace, txActions.removeAccountFromAllowList),checkMpOwnershipMiddleware, removeAccountFromAllowList);
+marketplaceRouter.post("/api/marketplace/update/remove-account-from-disallow-list",  validationMiddleware(addAccountToAllowListSchema),marketPlacePublicTypeMiddleWare,balanceCheckMiddleware(txPallets.marketplace, txActions.removeAccountFromDisallowList),checkMpOwnershipMiddleware, removeAccountFromDisAllowList);
 marketplaceRouter.get("/api/marketplace/details/:id",  validationMiddleware(MarketPlaceByIdSchema), getMarketplaceByIdFromChain);
 marketplaceRouter.get("/api/marketplace/all", getAllMarketplaceFromChain);
 

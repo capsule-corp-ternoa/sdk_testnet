@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { createMarketPlaceService ,setUriService,getMarketplaceDataByOwner as ownerDataforMp,setlogoUriService,getMarketplaceDataById,setNameService,setKindService,getMarketplaceDataByIdFromBlockChain,setCommissionFeeService,setOwnerService, getAllMarketplaceDataFromBlockChain} from '../service/marketPlaceService';
+import { createMarketPlaceService ,setUriService,getMarketplaceDataByOwner as ownerDataforMp,removeAccountFromDisAllowListService,addAccountToDisAllowListService,removeAccountFromAllowListService,setlogoUriService,getMarketplaceDataById,setNameService,setKindService,getMarketplaceDataByIdFromBlockChain,setCommissionFeeService,setOwnerService, getAllMarketplaceDataFromBlockChain,addAccountToAllowListService} from '../service/marketPlaceService';
 
 
 import { 
@@ -226,6 +226,82 @@ export const setlogoUriForMarketPlace= async (req: Request, res: Response) => {
     catch(err){
           res.status(500).json({
             message:`Unable to update logouri of marketplace with Id:${mpId}.`,
+            details:err && (err as any).message?(err as any).message:err
+        })
+    }
+}
+
+export const addAccountToAllowList=async (req: Request, res: Response) => {
+    const {mpId,address}=req.body;
+    const seed=getSeedFromRequest(req);
+    try{
+        const user=await getUserFromSeed(seed);
+        await addAccountToAllowListService(mpId,address,user);
+        res.status(200).json({
+           message:`Account Id :${address} added to AllowList of Marketplace Id :${mpId}`  
+        })
+    }
+    catch(err)
+    {
+          res.status(500).json({
+            message:`Unable to update AllowList of marketplace with Id:${mpId}.`,
+            details:err && (err as any).message?(err as any).message:err
+        })
+    }
+}
+export const removeAccountFromAllowList=async (req: Request, res: Response) => {
+    const {mpId,address}=req.body;
+    const seed=getSeedFromRequest(req);
+    try{
+        const user=await getUserFromSeed(seed);
+        await removeAccountFromAllowListService(mpId,address,user);
+        res.status(200).json({
+           message:`Account Id :${address} removed from AllowList of Marketplace Id :${mpId}`  
+        })
+    }
+    catch(err)
+    {
+          res.status(500).json({
+            message:`Unable to update AllowList of marketplace with Id:${mpId}.`,
+            details:err && (err as any).message?(err as any).message:err
+        })
+    }
+}
+
+
+export const removeAccountFromDisAllowList=async (req: Request, res: Response) => {
+    const {mpId,address}=req.body;
+    const seed=getSeedFromRequest(req);
+    try{
+        const user=await getUserFromSeed(seed);
+        await removeAccountFromDisAllowListService(mpId,address,user);
+        res.status(200).json({
+           message:`Account Id :${address} removed from DisAllow List of Marketplace Id :${mpId}`  
+        })
+    }
+    catch(err)
+    {
+          res.status(500).json({
+            message:`Unable to update AllowList of marketplace with Id:${mpId}.`,
+            details:err && (err as any).message?(err as any).message:err
+        })
+    }
+}
+
+export const addAccountToDisAllowList=async (req: Request, res: Response) => {
+    const {mpId,address}=req.body;
+    const seed=getSeedFromRequest(req);
+    try{
+        const user=await getUserFromSeed(seed);
+        await addAccountToDisAllowListService(mpId,address,user);
+        res.status(200).json({
+           message:`Account Id :${address} added to DisAllowList of Marketplace Id :${mpId}`  
+        })
+    }
+    catch(err)
+    {
+          res.status(500).json({
+            message:`Unable to update AllowList of marketplace with Id:${mpId}.`,
             details:err && (err as any).message?(err as any).message:err
         })
     }

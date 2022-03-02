@@ -154,3 +154,41 @@ export const setlogoUriService=async(mpId:any,logoUri:any,sender:any)=>{
     }
 
 }
+export const addAccountToAllowListService=async(mpId:any,accountId:any,sender:any)=>{
+    try{
+        await runTransaction(txPallets.marketplace, txActions.addAccountToAllowList, sender, [mpId, accountId], false,'marketplace.AccountAddedToAllowList')
+    }
+    catch(err)
+    {
+        throw err
+    }
+}
+
+export const addAccountToDisAllowListService=async(mpId:any,accountId:any,sender:any)=>{
+    try{
+        await runTransaction(txPallets.marketplace, txActions.addAccountToDisallowList, sender, [mpId, accountId], false,'marketplace.AccountAddedToDisallowList')
+    }
+    catch(err)
+    {
+        throw err
+    }
+}
+
+export const removeAccountFromAllowListService=async(mpId:any,accountId:any,sender:any)=>{
+    try{
+        await runTransaction(txPallets.marketplace, txActions.removeAccountFromAllowList, sender, [mpId, accountId], false,'marketplace.AccountRemovedFromAllowList')
+    }
+    catch(err)
+    {
+        throw err
+    }
+}
+export const removeAccountFromDisAllowListService=async(mpId:any,accountId:any,sender:any)=>{
+    try{
+        await runTransaction(txPallets.marketplace, txActions.removeAccountFromDisallowList, sender, [mpId, accountId], false,'marketplace.AccountRemovedFromDisallowList')
+    }
+    catch(err)
+    {
+        throw err
+    }
+}

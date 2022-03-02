@@ -33,7 +33,11 @@ export enum txActions {
     setKind='setMarketType',
     setName='setName',
     setUri='setUri',
-    setLogoUri='setLogoUri'
+    setLogoUri='setLogoUri',
+    addAccountToAllowList='addAccountToAllowList',
+    removeAccountFromAllowList='removeAccountFromAllowList',
+    addAccountToDisallowList='addAccountToDisallowList',
+    removeAccountFromDisallowList='removeAccountFromDisallowList'
 };
 export enum chainQuery {
     nftMintFee = 'nftMintFee',

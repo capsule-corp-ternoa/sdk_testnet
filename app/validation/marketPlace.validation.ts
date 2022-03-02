@@ -68,3 +68,11 @@ export const setLogoUriSchema: Joi.ObjectSchema = Joi.object({
         seed:Joi.string().optional()
     }
 })
+
+export const addAccountToAllowListSchema: Joi.ObjectSchema = Joi.object({
+    body:{
+        mpId:Joi.string().required(),
+        address:Joi.string().required(),
+        seed:Joi.string().optional()
+    }
+})
