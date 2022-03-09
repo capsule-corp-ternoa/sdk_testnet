@@ -34,7 +34,7 @@ nftRouter.post("/api/nft/upload-json",validationMiddleware(uploadNFTJsonSchema),
 nftRouter.post("/api/nft/mint",validationMiddleware(nftMintSchema),checkSerieLockedMiddleWare,balanceCheckMiddleware(txPallets.nfts, txActions.create),checkPrivateKeyExistance, mintNFT);
 nftRouter.post("/api/nft/create", validationMiddleware(createNewNftSchema),checkSerieLockedMiddleWare, balanceCheckMiddleware(txPallets.nfts, txActions.create),CheckPreviewFile,createNewNFT);
 
-nftRouter.post("/api/nft/burn",validationMiddleware(nftBurnSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.nfts, txActions.burn),checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware,checkNftNotBurntMiddleware, burnNft);
+nftRouter.post("/api/nft/burn",validationMiddleware(nftBurnSchema), burnNft);
 nftRouter.post("/api/nft/burn-batch",validationMiddleware(nftBatchShema),balanceCheckMiddleware(txPallets.nfts, txActions.burn), burnNftBatch);
 nftRouter.post("/api/nft/list",validationMiddleware(nftSaleSchema),checkSerieinDraftMiddleWare,contextSetterMiddleware, balanceCheckMiddleware(txPallets.marketplace, txActions.list),checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware,checkNftNotBurntMiddleware, checkNFTNotListedMiddleware, NftSale);
 // nftRouter.post("/api/nft/list-series-autolock",validationMiddleware(nftSaleSchema),checkSerieinDraftMiddleWare,contextSetterMiddleware, balanceCheckMiddleware(txPallets.marketplace, txActions.list),checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware,checkNftNotBurntMiddleware, checkNFTNotListedMiddleware, NftSale);

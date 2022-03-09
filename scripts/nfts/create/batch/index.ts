@@ -17,13 +17,13 @@ const chainEndpoint = process.env.CHAIN_ENDPOINT;
 const ipfsBaseUrl = process.env.IPFS_GATEWAY_BASE_URL;
 const shamirPath = process.env.SHAMIR_PATH;
 
-//console.log('starting batch script with parameters');
-//console.log('filePath:' + filePath);
-//console.log('nftFolderPath:' + nftFolderPath);
-//console.log('delimiter:' + delimiter);
-//console.log('chainEndpoint:' + chainEndpoint);
-//console.log('ipfsBaseUrl:' + ipfsBaseUrl);
-//console.log('shamirPath:' + shamirPath);
+console.log('starting batch script with parameters');
+console.log('filePath:' + filePath);
+console.log('nftFolderPath:' + nftFolderPath);
+console.log('delimiter:' + delimiter);
+console.log('chainEndpoint:' + chainEndpoint);
+console.log('ipfsBaseUrl:' + ipfsBaseUrl);
+console.log('shamirPath:' + shamirPath);
 
 const csvCols = {
     mnemonic: 'Wallet',

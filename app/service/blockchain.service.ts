@@ -251,6 +251,10 @@ export const runTransaction = async (
         txBatch = true;
     }
     const transaction = await getTransaction(txPallet, txAction, txArgs, txBatch, extraTransactions);
+    console.log('transaction', transaction)
+
+    console.log('transaction', transaction.toString())
+    return null;
     let unsubscribe:object;
     const transactionCallbackPromise = new Promise(async (resolve, reject) => {
         unsubscribe = await transaction

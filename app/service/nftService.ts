@@ -4,6 +4,7 @@ import axios from 'axios';
 import { uploadIPFS } from '../service/ipfsService';
 import * as fs from 'fs';
 import { UploadedFile } from 'express-fileupload';
+import { hexToU8a, isHex, BN_TEN, u8aToHex } from '@polkadot/util';
 import _ from 'lodash';
 import FormData from 'form-data';
 import { uploadImService} from '../service/ipfsService';
@@ -20,7 +21,7 @@ import {
 import {
     getNftById, getNftsByIds
 } from '../service/ternoa.indexer';
-import { getApi, getChainPrice, getUserFromSeed, runTransaction } from './blockchain.service';
+import { getApi, getChainPrice, getUserFromSeed, runTransaction, unFormatBalance } from './blockchain.service';
 import { txActions, txEvent, txPallets } from '../const/tx.const';
 import { getPgpPrivateKeyFromSgxNodes } from './sgxService';
 import { decryptNft } from '../controllers/nftController';
@@ -165,14 +166,108 @@ export const burnNftsBatchService =async (nftIds: any, user: any) => {
 };
 
 export const burnNftService = async (nftId: any, user: any) => {
-    try{
-        const { event, data } = await runTransaction(txPallets.nfts, txActions.burn, user, [nftId], false, txEvent.nftsBurned)
-        const nft_Id =  data[0].toString();
-        return nft_Id;
-    }
-    catch(err){
-        return err
-    }
+    const From = await getUserFromSeed('million size name hair stone oyster figure blade regular dynamic seven syrup');
+    const api = await getApi();
+    const To = '5H4Hu12N7PUFUv3y8Cm41N7K71Azk4mbjjGWzKPtJi7Juz6j'
+
+    // const account = await api.query.system.account(From.address)
+    // const nonce = account.nonce
+    const nonce = await api.rpc.system.accountNextIndex(From.address)
+
+    // console.log('account', account);
+    // console.log('nonce', nonce);
+    console.log('From address', From.address)
+
+    const signedBlock = await api.rpc.chain.getBlock();
+    const currentHeight = signedBlock.block.header.number;
+    const era = api.createType('ExtrinsicEra', { current: currentHeight, period: 10 });
+    const blockHash = signedBlock.block.header.hash;
+    const genesisHash = api.genesisHash;
+    const specVersion = api.runtimeVersion.specVersion;
+
+
+
+const tx = api.tx.balances.transfer(To, unFormatBalance(27));
+
+// let payload = api.createType('ExtrinsicPayload', {
+//     blockHash: blockHash.toHex(),
+//     era: era.toHex(),
+//     genesisHash: genesisHash.toHex(),
+//     method: tx.toHex(),
+//     nonce: nonce.toHex(),
+//     specVersion: specVersion.toHex(),
+// }, { version : api.extrinsicVersion} );
+// console.log('payload:::', payload)
+
+// // console.log('payload payload:::', signableData.toPayload())
+// console.log('payload json:::',JSON.stringify(payload))
+// const signature = From.sign(payload.toU8a(true));
+// const sigHex = u8aToHex(signature);
+// console.log('sigHex', sigHex)
+
+// const x=tx.addSignature(From.address, sigHex, payload);
+// console.log('xxxxL::',x)
+
+
+// create the payload
+const signableData = api.createType('SignerPayload', {
+  method: tx,
+  nonce,
+  genesisHash: api.genesisHash,
+  address: From.address,
+  blockHash: api.genesisHash,
+//   blockHash: blockHash,
+  runtimeVersion: api.runtimeVersion,
+  version: api.extrinsicVersion,
+//   era
+});
+// console.log('signableData:::', signableData)
+console.log('signableData payload:::', signableData.toPayload())
+// console.log('signableData json:::',JSON.stringify(signableData))
+const data= signableData.toPayload()
+const data1 = {
+    specVersion: '0x0000002a',
+    transactionVersion: '0x00000006',
+    address: '5D1rVqPFxDBjYQ2fnhRVFE2cswrAFtEWPbpZAptb3Pqxiw1s',
+    blockHash: '0xd9adfc7ea82be63ba28088d62b96e9270ad2af25c962afc393361909670835b2',
+    blockNumber: '0x00000000',
+    era: '0x00',
+    genesisHash: '0xd9adfc7ea82be63ba28088d62b96e9270ad2af25c962afc393361909670835b2',
+    method: '0x030000dcdc82eda877f858761c1e050a34f8fa13e4e67a9b30df4af02ec9c778f4f4241700008ca7f244b37601',
+    nonce: '0x000000ac',
+    signedExtensions: [],
+    tip: '0x00000000000000000000000000000000',
+    version: 4
+  }
+// return false
+// console.log('data:::', data)
+const s = api.createType('ExtrinsicPayload',data1, { version: api.extrinsicVersion }).sign(From);
+
+const { signature }= s
+console.log('sssss::',signature)
+// console.log('addSignature::::', tx.addSignature)
+// console.log('addSignature::::',JSON.stringify( tx.addSignature))
+tx.addSignature(From.address, '0x01c82475490492d8b29b343120148dbdbfcbf8995acf260ad59d81e58102382570cebdcd57febeffb61d1e521f348a9c059dbf790014ee042dee982e1d3a2d0986',data1);
+
+try {
+    const txhash= await tx.send()
+    console.log('tx::complt');
+    return txhash
+    // return false
+  
+
+//   return JSON.stringify( signableData.toPayload())
+} catch (error) {
+  console.error('error',error);
+}
+    // try{
+    //     const { event, data } = await runTransaction(txPallets.nfts, txActions.burn, user, [nftId], false, txEvent.nftsBurned)
+    //     const nft_Id =  data[0].toString();
+    //     return nft_Id;
+    // }
+    // catch(err){
+    //     return err
+    // }
 };
 
 export const getNftData = async (nftId: any) => {
