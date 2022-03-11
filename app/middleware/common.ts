@@ -38,7 +38,8 @@ const contextNftSetter = async (req: Request) => {
 
 export const checkMimeType=async(req:Request,res:Response,next:NextFunction)=>{
     const file=req.files?.file as any;
-    if(file.mimetype==='image/jpeg' || file.mimetype==='image/png' || file.mimetype==='image/svg' || file.mimetype==='video/mp4')
+    console.log(file.mimetype);
+    if(file.mimetype==='image/jpeg' || file.mimetype==='image/png' || file.mimetype==='image/svg' ||  file.mimetype==='image/svg+xml' || file.mimetype==='video/mp4')
     {
         next();
     }
@@ -70,4 +71,34 @@ export const allFileSizeChecks=async (req: Request, res: Response, next: NextFun
         res.status(400).send("Media File size must be less than 30 mbs!");
     }
 
+}
+
+export const checkMimeTypeforCreateNft=async(req:Request,res:Response,next:NextFunction)=>{
+    const previewFile=req.files?.previewFile as any;
+    const encryptFile=req.files?.encryptFile as any;
+    const ImagePreviewFile=req.files?.ImagePreviewFile as any;
+    if((previewFile.mimetype==='image/jpeg' || previewFile.mimetype==='image/png' || previewFile.mimetype==='image/svg' ||  previewFile.mimetype==='image/svg+xml' || previewFile.mimetype==='video/mp4') && 
+    (encryptFile.mimetype==='image/jpeg' || encryptFile.mimetype==='image/png' || encryptFile.mimetype==='image/svg' ||  encryptFile.mimetype==='image/svg+xml' || encryptFile.mimetype==='video/mp4') )
+    {
+        if(!ImagePreviewFile)
+        {
+            next();
+        }
+        else
+        {
+            if((ImagePreviewFile.mimetype==='image/jpeg' || ImagePreviewFile.mimetype==='image/png' || ImagePreviewFile.mimetype==='image/svg' ||  ImagePreviewFile.mimetype==='image/svg+xml' ) )
+            {
+                next();
+            }
+            else
+            {
+                res.status(403).send('Image preview file type must be of jpeg,png, or svg!')
+            }
+        }
+        
+    }
+    else
+    {
+        res.status(403).send('file type must be of jpeg,png,svg or mp4!')
+    }   
 }

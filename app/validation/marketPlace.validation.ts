@@ -19,7 +19,7 @@ export const MarketPlaceByOwnerSchema: Joi.ObjectSchema = Joi.object({
 
 export const MarketPlaceByIdSchema: Joi.ObjectSchema = Joi.object({
     params:{
-        id:Joi.string().required(),
+        id:Joi.number().min(1).required(),
     }
 })
 

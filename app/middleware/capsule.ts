@@ -22,9 +22,10 @@ export const validateUploadCapsuleJsonMiddleware = async (req: Request, res: Res
 }
 
 export const checkIfCapsuleMiddleWare = async (req: Request, res: Response, next: NextFunction) => {
-   const {nftId}=req.body as any;
-   const nftData=getNftById(nftId) as any;
+   const {nftId}=req.params as any;
+   const nftData=await getNftById(nftId) as any;
    if(nftData){
+       console.log(nftData);
         if(nftData.isCapsule===true){
             next();
         }

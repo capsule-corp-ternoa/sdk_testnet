@@ -71,6 +71,13 @@ export const encryptAndUploadMediaSchema:Joi.ObjectSchema= Joi.object({
     }
 });
 
+export const nftCreateBatchShema:Joi.ObjectSchema= Joi.object({
+    files:{
+        file:Joi.object().required(),
+        seed:Joi.string().optional()
+    }
+});
+
 export const decryptNftSchema : Joi.ObjectSchema = Joi.object({
     body: {
         nftId: Joi.number().required(),
@@ -106,7 +113,7 @@ export const nftSaleSchema: Joi.ObjectSchema = Joi.object({
 });
 export const getNftDataByOwnerScehma:Joi.ObjectSchema=Joi.object({
     params: {
-        address: Joi.string().min(48).required()
+        address: Joi.string().alphanum().min(48).max(48).required()
     }
 })
 

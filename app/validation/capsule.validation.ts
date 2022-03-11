@@ -12,7 +12,7 @@ export const capsuleItemEncryptSchema: Joi.ObjectSchema = Joi.object({
 
 export const setIpfsReferenceSchema: Joi.ObjectSchema = Joi.object({
     body:{
-        nftId:Joi.string().required(),
+        nftId:Joi.string().alphanum().required(),
         seed:Joi.string().optional(),
         ipfs:Joi.string().required()
     }
@@ -20,7 +20,7 @@ export const setIpfsReferenceSchema: Joi.ObjectSchema = Joi.object({
 export const nftToCapsuleSchema: Joi.ObjectSchema = Joi.object({
 
     body:{
-        nftId:Joi.string().required(),
+        nftId:Joi.string().alphanum().required(),
         seed:Joi.string().optional(),
         ipfs:Joi.string().required()
     }
@@ -42,20 +42,20 @@ export const capsuleCreateSchema: Joi.ObjectSchema = Joi.object({
 
 export const capsuleRemoveSchema: Joi.ObjectSchema = Joi.object({
     body:{
-        nftId:Joi.string().required(),
+        nftId:Joi.string().alphanum().required(),
         seed:Joi.string().optional()
     }
 })
 
 export const capsuleCommonSchema: Joi.ObjectSchema = Joi.object({
     body:{
-        nftId:Joi.string().required()
+        nftId:Joi.string().alphanum().required()
     }
 })
 
 export const getCapsuleItemsSchema: Joi.ObjectSchema = Joi.object({
     params:{
-        nftId:Joi.string().required()
+        nftId:Joi.string().alphanum().required()
     }
 })
 
@@ -65,12 +65,12 @@ export const addFileToCapsuleschema: Joi.ObjectSchema = Joi.object({
     },
     body:{
         title:Joi.string().required(),
-        nftId:Joi.string().required()
+        nftId:Joi.string().alphanum().required()
     }
 })
 export const removeFileFromCapsuleSchema: Joi.ObjectSchema = Joi.object({
     body:{
-        nftId:Joi.string().required(),
+        nftId:Joi.string().alphanum().required(),
         seed:Joi.string().optional(),
         fileIpfs:Joi.string().required()
     }

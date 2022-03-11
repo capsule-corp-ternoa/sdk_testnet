@@ -448,3 +448,21 @@ export const nftTransfer= async (req: Request, res: Response) => {
     )
   }
 }
+
+export const createNftBatch=async(req:Request,res:Response)=>{
+  const {file}=req.files?.file as any;
+  const seed=getSeedFromRequest(req);
+  try{
+    const sender=await getUserFromSeed(seed);
+    console.log(file);
+  }
+  catch(err){
+    res.status(500).json(
+      {
+        message:`Unable to create the batch of Nfts on BlockChain`,
+        details:err && (err as any).message?(err as any).message:err
+      }
+    )
+  }
+
+}

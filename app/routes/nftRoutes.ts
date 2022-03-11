@@ -16,22 +16,24 @@ import {
     decryptNft,
     getNftIdBySeries,
     nftTransfer,
-    getNftIdBySeriesForOwner
+    getNftIdBySeriesForOwner,
+    createNftBatch
 } from "../controllers/nftController";
 import { validationMiddleware } from "../validation";
 import { createNewNftSchema ,encryptAndUploadMediaSchema,decryptNftSchema, nftTransferScehma, unlistNftSchema,nftMintSchema,uploadNFTJsonSchema,
-    getNftDataSchema, nftBurnSchema, getNftIdBySeriesSchema,serieLockSchema,nftSaleSchema,getNftDataByOwnerScehma,nftBatchShema, getNftIdBySeriesForOwnerSchema} from "../validation/nft.validation";
+    getNftDataSchema, nftBurnSchema, getNftIdBySeriesSchema,serieLockSchema,nftCreateBatchShema,nftSaleSchema,getNftDataByOwnerScehma,nftBatchShema, getNftIdBySeriesForOwnerSchema} from "../validation/nft.validation";
 import { balanceCheckMiddleware } from '../middleware/balance';
 import { checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware, checkPrivateKeyExistance, checkNftNotBurntMiddleware, checkNFTNotListedMiddleware, checkNftListedMiddleware,CheckPreviewFile, checkSerieLockedMiddleWare,checkSerieIdExistenceMiddleware,checkSerieinDraftMiddleWare} from '../middleware/nft';
-import { contextSetterMiddleware ,fileSizeCheck,allFileSizeChecks} from '../middleware/common';
+import { contextSetterMiddleware ,fileSizeCheck,allFileSizeChecks,checkMimeTypeforCreateNft,checkMimeType} from '../middleware/common';
 
 const nftRouter = Router();
 
-nftRouter.post("/api/nft/media/encrypt-and-upload",validationMiddleware(encryptAndUploadMediaSchema),fileSizeCheck, encryptAndUploadMedia);
+nftRouter.post("/api/nft/media/encrypt-and-upload",validationMiddleware(encryptAndUploadMediaSchema),checkMimeType,fileSizeCheck, encryptAndUploadMedia);
 nftRouter.post("/api/nft/upload-json",validationMiddleware(uploadNFTJsonSchema), uploadNFTJson);
 
 nftRouter.post("/api/nft/mint",validationMiddleware(nftMintSchema),checkSerieLockedMiddleWare,balanceCheckMiddleware(txPallets.nfts, txActions.create),checkPrivateKeyExistance, mintNFT);
-nftRouter.post("/api/nft/create", validationMiddleware(createNewNftSchema),allFileSizeChecks ,checkSerieLockedMiddleWare, balanceCheckMiddleware(txPallets.nfts, txActions.create),CheckPreviewFile,createNewNFT);
+nftRouter.post("/api/nft/create", validationMiddleware(createNewNftSchema),checkMimeTypeforCreateNft,allFileSizeChecks ,checkSerieLockedMiddleWare, balanceCheckMiddleware(txPallets.nfts, txActions.create),CheckPreviewFile,createNewNFT);
+nftRouter.post("/api/nft/create-batch",validationMiddleware(nftCreateBatchShema),balanceCheckMiddleware(txPallets.nfts, txActions.create), createNftBatch);
 
 nftRouter.post("/api/nft/burn",validationMiddleware(nftBurnSchema),contextSetterMiddleware, balanceCheckMiddleware(txPallets.nfts, txActions.burn),checkNftOwnershipMiddleware,checkNFTNotCapsuleMiddleware,checkNftNotBurntMiddleware, burnNft);
 nftRouter.post("/api/nft/burn-batch",validationMiddleware(nftBatchShema),balanceCheckMiddleware(txPallets.nfts, txActions.burn), burnNftBatch);

@@ -95,3 +95,22 @@ export const marketPlacePublicTypeMiddleWare=async (req: Request, res: Response,
         })
     }
 }
+export const checkMarketPlaceExistence =async (req: Request, res: Response, next: NextFunction) => {
+    const {mpId} = req.body;
+    console.log(mpId)
+    try{
+        const marketPlaceData=await getMarketplaceDataByIdFromBlockChain(mpId);
+        if(marketPlaceData)
+        {
+            next();
+        }
+        else
+        {
+            res.status(404).send("MarketPlace of particular Id doesnot exist!")    
+        }
+    }
+    catch(err)
+    {
+        res.status(404).send("MarketPlace of particular Id doesnot exist!")
+    }   
+}
